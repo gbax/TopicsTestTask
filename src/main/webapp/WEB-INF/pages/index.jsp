@@ -6,7 +6,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/underscore.js"></script>
 </head>
 <body>
-<h2></h2>
+<h2><c:choose</h2>
 <h4>Message: ${message}!</h4>
 </body>
 </html>

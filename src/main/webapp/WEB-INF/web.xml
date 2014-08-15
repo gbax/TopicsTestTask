@@ -4,13 +4,20 @@
                              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
-    <display-name>Counter Web Application</display-name>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring/root-context.xml</param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>mvc-dispatcher</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring/servlet-context.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -18,13 +25,6 @@
         <servlet-name>mvc-dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-            /WEB-INF/mvc-dispatcher-servlet.xml
-        </param-value>
-    </context-param>
 
     <listener>
         <listener-class>
