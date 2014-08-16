@@ -47,5 +47,5 @@
         <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect"/>
     </bean>
 
-    <jpa:repositories base-package="com.gbax.TopicsTestTask.dao.entity"/>
+    <jpa:repositories base-package="com.gbax.TopicsTestTask.dao"/>
 </beans>

@@ -12,7 +12,10 @@
 
     <context:component-scan base-package="com.gbax.TopicsTestTask"/>
 
-    <context:annotation-config/>
-
     <import resource="db.xml"/>
+
+    <import resource="security.xml"/>
+
+    <bean id="main" class="com.gbax.TopicsTestTask.controller.MainController" init-method="fillData"/>
+
 </beans>
