@@ -1,51 +1,34 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
-    <title>Application</title>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/backbone.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/underscore.js"></script>
+    <title>Список форумов</title>
+    <c:import url="../include/templates/topicTemplate.jsp"/>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/underscore.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/backbone.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/handlebars-v1.3.0.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/application.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/models.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/views.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/collections.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/router.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/main.js"></script>
 </head>
 <body>
-<h2>Hey</h2>
-<h4>Message: ${message}!</h4>
-<hr>
-<sec:authorize access="isAuthenticated()">
-    1
-</sec:authorize>
-<sec:authorize access="!isAuthenticated()">
-    0
-</sec:authorize>
-<hr>
-<form name='f' action="<c:url value='j_spring_security_check' />" method='POST'>
+<c:import url="../include/login.jsp"/>
 
-    <div class="authBlock">
-        <div class="authTitle">Введите логин и пароль для домена Aplana</div>
-        <div class="authForm">
-            <form action="index.html" method="POST" name="authForm">
-                <label for="inputLogin">Логин: </label>
-                <br/>
-                <input id="inputLogin" type="text" name="j_username" value=""/>
-                <br/>
-                <label for="inputPass">Пароль: </label>
-                <br/>
-                <input id="inputPass" type="password" name="j_password" value=""/>
-                <br/>
-                <br/>
-                <input class="btnSend" type="submit" value="Войти"/>
-            </form>  <br>
-
-
-            <%--<c:forEach items="${sessionScope}" var="e">--%>
-            <%--<fmt:message key="${e.key}">--%>
-            <%--<fmt:param value="${e.value}"/>--%>
-            <%--</fmt:message><br>--%>
-            <%--</c:forEach>--%>
-        </div>
-    </div>
-
-</form>
+<table id="topicsTable">
+    <thead>
+        <tr>
+            <td>
+                Номер
+            </td>
+            <td>
+                Описание
+            </td>
+        </tr>
+    </thead>
+</table>
 </body>
 </html>

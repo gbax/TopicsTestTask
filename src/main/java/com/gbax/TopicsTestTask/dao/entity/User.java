@@ -2,10 +2,6 @@ package com.gbax.TopicsTestTask.dao.entity;
 
 import javax.persistence.*;
 
-/**
- * Created by abayanov
- * Date: 15.08.14
- */
 @Entity
 @Table(name = "user")
 public class User {

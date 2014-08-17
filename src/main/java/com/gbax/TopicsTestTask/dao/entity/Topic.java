@@ -1,14 +1,9 @@
 package com.gbax.TopicsTestTask.dao.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
-/**
- * Created by abayanov
- * Date: 11.08.14
- */
+
 @Entity
 @Table(name = "topic")
 public class Topic {
@@ -18,6 +13,9 @@ public class Topic {
     private Integer id;
 
     private String description;
+
+    @OneToMany(mappedBy="topic", fetch = FetchType.LAZY)
+    private List<Message> messages;
 
     public Integer getId() {
         return id;
@@ -33,5 +31,13 @@ public class Topic {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }
