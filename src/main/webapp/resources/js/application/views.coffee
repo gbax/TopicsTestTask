@@ -37,9 +37,7 @@ class window.App.Views.AddTopic extends Backbone.View
   el: '#topicForm'
 
   events:
-  {
     submit: 'addTopic'
-  }
 
   addTopic: (e) ->
     e.preventDefault()
@@ -151,32 +149,3 @@ class window.App.Views.Message extends Backbone.View
     @$el.html @template @model.toJSON()
     this
 
-
-###
-Paginator
-###
-class window.App.Views.PaginationView extends Backbone.View.extend
-  template: _.template($("#pagination-view").html())
-
-  link: ""
-
-  page_count: null
-
-  page_active: null
-
-  page_show: 5
-
-  attributes:
-    'class': 'pagination'
-
-
-  initialize: (params) ->
-    this.link = params.link;
-    this.page_count = params.page_count
-    if (this.page_count <= this.page_show)
-      @.page_show = this.page_count
-    this.page_active = params.page_active
-
-
-  render: (eventName) ->
-    console.log "rere"

@@ -11,6 +11,9 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/backbone.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/backbone.paginator.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/handlebars-v1.3.0.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/frameworks/backgrid.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/extensions/paginator/backgrid-paginator.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/extensions/text-cell/backgrid-text-cell.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/application.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/models.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/application/views.js"></script>
@@ -48,5 +51,8 @@
         </div>
     </form>
 </sec:authorize>
+<hr>
+<div id="grid"></div>
+<div id="paginator"></div>
 </body>
 </html>
