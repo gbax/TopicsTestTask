@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <script id="topicTemplate" type="text/template">
 
     <td>{{id}}</td>

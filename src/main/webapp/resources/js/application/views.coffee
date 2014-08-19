@@ -44,6 +44,7 @@ Topic view
 ###
 class window.App.Views.TopicForm extends Backbone.Model
   initialize: ->
+    addMessage = new window.App.Views.AddMessage(collection: window.App.messages)
     allMessages = new window.App.Views.MessagesView(collection: window.App.messages).render()
     $("#messagesTable").append allMessages.el
 
@@ -51,7 +52,19 @@ class window.App.Views.TopicForm extends Backbone.Model
 Message row
 ###
 class window.App.Views.Message extends Backbone.View
+  initialize: ->
+    @model.on 'destroy', @unrender, @
+
   tagName: 'tr'
+
+  events:
+    'click a.delete' : 'removeModel'
+
+  removeModel: ->
+    @model.destroy()
+
+  unrender: ->
+    @remove()
 
   template: window.App.template 'messageTemplate'
 
@@ -64,7 +77,7 @@ Message table
 ###
 class window.App.Views.MessagesView extends Backbone.View
   initialize: ->
-    console.log @collection.toJSON()
+    @collection.on 'add', @addOne, @
 
   tagName: 'tbody'
 
@@ -76,3 +89,25 @@ class window.App.Views.MessagesView extends Backbone.View
     viewMessage = new window.App.Views.Message model: message
 
     @$el.append viewMessage.render().el
+
+###
+Add message form
+###
+class window.App.Views.AddMessage extends Backbone.View
+  initialize: ->
+     @messageEl =  @$('#message')
+
+  el: '#messageForm'
+
+  events: {
+    submit : 'addMessage'
+  }
+
+  addMessage: (e) ->
+
+    e.preventDefault()
+    @collection.create({message: @messageEl.val()}, {wait: true})
+    @clearForm()
+
+  clearForm: ->
+    @messageEl.val('')

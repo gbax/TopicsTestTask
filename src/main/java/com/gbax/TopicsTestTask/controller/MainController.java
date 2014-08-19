@@ -8,15 +8,17 @@ import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
 
 
 @Controller
+@RequestMapping("/")
 public class MainController {
 
     @Autowired
@@ -29,40 +31,43 @@ public class MainController {
     TopicService topicService;
 
     public void fillData(){
-        for (int i = 0; i < 4; i++) {
-            Topic topic = new Topic();
-            topic.setDescription(String.format("Test topic %s", i));
-            topicService.addTopic(topic);
-            for (int j = 0;j< 3;j++){
-                Message message=new Message();
-                message.setMesssage(String.format("Test message %s", j));
-                message.setTopic(topic);
-                messageService.addMessage(message);
-            }
-        }
-
         User user = new User();
         user.setName("1");
         user.setPassword("1");
         userService.addUser(user);
+
+        for (int i = 0; i < 4; i++) {
+            Topic topic = new Topic();
+            topic.setDescription(String.format("Test topic %s", i));
+            topic.setUser(user);
+            topicService.addTopic(topic);
+            for (int j = 0;j< 3;j++){
+                Message message=new Message();
+                message.setMessage(String.format("Test message %s", j));
+                message.setTopic(topic);
+                message.setUser(user);
+                messageService.addMessage(message);
+            }
+        }
+
+
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public String index() {
-        return "redirect:/topicList";
+        return "redirect:/index";
     }
 
-    @RequestMapping(value = "topicList", method = RequestMethod.GET)
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView showMainForm() {
         ModelAndView model = new ModelAndView("index");
         return model;
     }
 
-    @RequestMapping(value = "topics", method = RequestMethod.GET, headers = "Accept=text/plain;Charset=UTF-8")
-    @ResponseBody
-    public String topics() {
-        return topicService.getTopicsJSON();
+    @RequestMapping(value = "/topic/{id}", method = RequestMethod.GET)
+    public ModelAndView showTopicForm(@PathVariable("id") Integer id) {
+        ModelAndView model = new ModelAndView("topic");
+        return model;
     }
-
 }
 

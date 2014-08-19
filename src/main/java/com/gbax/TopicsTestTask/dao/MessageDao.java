@@ -22,23 +22,15 @@ public class MessageDao {
     private EntityManager entityManager;
 
 
-    public void addMessage(Message message) {
-        entityManager.persist(message);
+    public Message addMessage(Message message) {
+        return entityManager.merge(message);
     }
 
-    public List<Message> getMessageByTopicId(Integer id) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
-        Root<Message> topicRoot = query.from(Message.class);
-        ParameterExpression<Integer> p = criteriaBuilder.parameter(Integer.class);
-        query.select(topicRoot).where(criteriaBuilder.equal(topicRoot.get("topic.id"), p));
-        TypedQuery<Message> query1 = entityManager.createQuery(query);
-        query1.setParameter(p, id);
-
-        return query1.getResultList();
+    public Message getMessagesById(Integer id) {
+        return entityManager.find(Message.class, id);
     }
 
-    public List getMessagesByTopic(Topic topic) {
+    public List<Message> getMessagesByTopic(Topic topic) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
@@ -51,4 +43,7 @@ public class MessageDao {
         return query1.getResultList();
     }
 
+    public void remove(Message message) {
+        entityManager.remove(message);
+    }
 }

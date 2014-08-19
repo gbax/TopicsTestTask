@@ -17,7 +17,7 @@
 </head>
 <body>
 <c:import url="../include/login.jsp"/>
-
+<h3>Список форумов</h3>
 <table id="topicsTable">
     <thead>
         <tr>
