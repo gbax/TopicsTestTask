@@ -5,7 +5,8 @@ window.App.Views.MainForm = function (super$) {
     super$.apply(this, arguments);
   }
   MainForm.prototype.initialize = function () {
-    var allTopics;
+    var allTopics, topicForm;
+    topicForm = new window.App.Views.AddTopic({ collection: window.App.topics }).render();
     allTopics = new window.App.Views.TopicsView({ collection: window.App.topics }).render();
     return $('#topicsTable').append(allTopics.el);
   };
@@ -17,7 +18,7 @@ window.App.Views.TopicsView = function (super$1) {
     super$1.apply(this, arguments);
   }
   TopicsView.prototype.initialize = function () {
-    return console.log(this.collection.toJSON());
+    return this.collection.on('add', this.addOne, this);
   };
   TopicsView.prototype.tagName = 'tbody';
   TopicsView.prototype.render = function () {
@@ -31,12 +32,42 @@ window.App.Views.TopicsView = function (super$1) {
   };
   return TopicsView;
 }(Backbone.View);
-window.App.Views.Topic = function (super$2) {
-  extends$(Topic, super$2);
-  function Topic() {
+window.App.Views.AddTopic = function (super$2) {
+  extends$(AddTopic, super$2);
+  function AddTopic() {
     super$2.apply(this, arguments);
   }
+  AddTopic.prototype.initialize = function () {
+    return this.descriptionEl = this.$('#description');
+  };
+  AddTopic.prototype.el = '#topicForm';
+  AddTopic.prototype.events = { submit: 'addTopic' };
+  AddTopic.prototype.addTopic = function (e) {
+    e.preventDefault();
+    this.collection.create({ description: this.descriptionEl.val() }, { wait: true });
+    return this.clearForm();
+  };
+  AddTopic.prototype.clearForm = function () {
+    return this.descriptionEl.val('');
+  };
+  return AddTopic;
+}(Backbone.View);
+window.App.Views.Topic = function (super$3) {
+  extends$(Topic, super$3);
+  function Topic() {
+    super$3.apply(this, arguments);
+  }
+  Topic.prototype.initialize = function () {
+    return this.model.on('destroy', this.unrender, this);
+  };
   Topic.prototype.tagName = 'tr';
+  Topic.prototype.events = { 'click a.delete': 'removeModel' };
+  Topic.prototype.removeModel = function () {
+    return this.model.destroy();
+  };
+  Topic.prototype.unrender = function () {
+    return this.remove();
+  };
   Topic.prototype.template = window.App.template('topicTemplate');
   Topic.prototype.render = function () {
     this.$el.html(this.template(this.model.toJSON()));
@@ -44,10 +75,10 @@ window.App.Views.Topic = function (super$2) {
   };
   return Topic;
 }(Backbone.View);
-window.App.Views.TopicForm = function (super$3) {
-  extends$(TopicForm, super$3);
+window.App.Views.TopicForm = function (super$4) {
+  extends$(TopicForm, super$4);
   function TopicForm() {
-    super$3.apply(this, arguments);
+    super$4.apply(this, arguments);
   }
   TopicForm.prototype.initialize = function () {
     var addMessage, allMessages;
@@ -57,29 +88,6 @@ window.App.Views.TopicForm = function (super$3) {
   };
   return TopicForm;
 }(Backbone.Model);
-window.App.Views.Message = function (super$4) {
-  extends$(Message, super$4);
-  function Message() {
-    super$4.apply(this, arguments);
-  }
-  Message.prototype.initialize = function () {
-    return this.model.on('destroy', this.unrender, this);
-  };
-  Message.prototype.tagName = 'tr';
-  Message.prototype.events = { 'click a.delete': 'removeModel' };
-  Message.prototype.removeModel = function () {
-    return this.model.destroy();
-  };
-  Message.prototype.unrender = function () {
-    return this.remove();
-  };
-  Message.prototype.template = window.App.template('messageTemplate');
-  Message.prototype.render = function () {
-    this.$el.html(this.template(this.model.toJSON()));
-    return this;
-  };
-  return Message;
-}(Backbone.View);
 window.App.Views.MessagesView = function (super$5) {
   extends$(MessagesView, super$5);
   function MessagesView() {
@@ -103,6 +111,11 @@ window.App.Views.MessagesView = function (super$5) {
 window.App.Views.AddMessage = function (super$6) {
   extends$(AddMessage, super$6);
   function AddMessage() {
+    var instance$;
+    instance$ = this;
+    this.errSh = function (a, b, c, d) {
+      return AddMessage.prototype.errSh.apply(instance$, arguments);
+    };
     super$6.apply(this, arguments);
   }
   AddMessage.prototype.initialize = function () {
@@ -118,8 +131,57 @@ window.App.Views.AddMessage = function (super$6) {
   AddMessage.prototype.clearForm = function () {
     return this.messageEl.val('');
   };
+  AddMessage.prototype.errSh = function (view, attr, error, selector) {
+    return alert('fook');
+  };
   return AddMessage;
 }(Backbone.View);
+window.App.Views.Message = function (super$7) {
+  extends$(Message, super$7);
+  function Message() {
+    super$7.apply(this, arguments);
+  }
+  Message.prototype.initialize = function () {
+    return this.model.on('destroy', this.unrender, this);
+  };
+  Message.prototype.tagName = 'tr';
+  Message.prototype.events = { 'click a.delete': 'removeModel' };
+  Message.prototype.removeModel = function () {
+    return this.model.destroy();
+  };
+  Message.prototype.unrender = function () {
+    return this.remove();
+  };
+  Message.prototype.template = window.App.template('messageTemplate');
+  Message.prototype.render = function () {
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  };
+  return Message;
+}(Backbone.View);
+window.App.Views.PaginationView = function (super$8) {
+  extends$(PaginationView, super$8);
+  function PaginationView() {
+    super$8.apply(this, arguments);
+  }
+  PaginationView.prototype.template = _.template($('#pagination-view').html());
+  PaginationView.prototype.link = '';
+  PaginationView.prototype.page_count = null;
+  PaginationView.prototype.page_active = null;
+  PaginationView.prototype.page_show = 5;
+  PaginationView.prototype.attributes = { 'class': 'pagination' };
+  PaginationView.prototype.initialize = function (params) {
+    this.link = params.link;
+    this.page_count = params.page_count;
+    if (this.page_count <= this.page_show)
+      this.page_show = this.page_count;
+    return this.page_active = params.page_active;
+  };
+  PaginationView.prototype.render = function (eventName) {
+    return console.log('rere');
+  };
+  return PaginationView;
+}(Backbone.View.extend);
 function isOwn$(o, p) {
   return {}.hasOwnProperty.call(o, p);
 }

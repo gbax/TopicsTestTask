@@ -1,5 +1,5 @@
 new App.Router()
-Backbone.history.start()
+Backbone.history.start({ pushState: true, root: '/'})
 
 App.messages = new App.Collections.Messages()
 

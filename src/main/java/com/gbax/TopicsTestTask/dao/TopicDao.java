@@ -24,8 +24,9 @@ public class TopicDao {
     private EntityManager entityManager;
 
 
-    public void addTopic(Topic topic) {
+    public Topic addTopic(Topic topic) {
         entityManager.persist(topic);
+        return topic;
     }
 
     public Topic getTopicById(Integer id) {
@@ -39,5 +40,9 @@ public class TopicDao {
         TypedQuery<Topic> query1 = entityManager.createQuery(query);
 
         return query1.getResultList();
+    }
+
+    public void remove(Topic topic) {
+        entityManager.remove(topic);
     }
 }

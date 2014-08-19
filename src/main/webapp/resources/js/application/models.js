@@ -4,7 +4,15 @@ window.App.Models.Topic = function (super$) {
   function Topic() {
     super$.apply(this, arguments);
   }
-  void 0;
+  Topic.prototype.validate = function (attrs) {
+    if (!attrs.description)
+      return '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0434\u043b\u044f \u0437\u0430\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u044f';
+  };
+  Topic.prototype.initialize = function () {
+    return this.bind('invalid', function (model, msg) {
+      return alert(msg);
+    });
+  };
   return Topic;
 }(Backbone.Model);
 window.App.Models.Message = function (super$1) {
@@ -15,6 +23,11 @@ window.App.Models.Message = function (super$1) {
   Message.prototype.validate = function (attrs) {
     if (!attrs.message)
       return '\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0434\u043b\u044f \u0437\u0430\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u044f';
+  };
+  Message.prototype.initialize = function () {
+    return this.bind('invalid', function (model, msg) {
+      return alert(msg);
+    });
   };
   return Message;
 }(Backbone.Model);

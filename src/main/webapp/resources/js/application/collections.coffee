@@ -1,10 +1,9 @@
 class window.App.Collections.Topics extends Backbone.Collection
   model: window.App.Models.Topic
-  url: '/topic/all'
+  url: '/topics'
 
-class window.App.Collections.Messages extends Backbone.Collection
+class window.App.Collections.Messages extends Backbone.PageableCollection
   model: window.App.Models.Message
   @getCurrentTopicId: ->
-    [open, content..., close] = document.URL.split("/")
-    close
+    $('#topicId').val()
   url: '/topic/messages/' + @getCurrentTopicId()

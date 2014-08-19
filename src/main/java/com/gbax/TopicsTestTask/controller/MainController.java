@@ -36,12 +36,17 @@ public class MainController {
         user.setPassword("1");
         userService.addUser(user);
 
-        for (int i = 0; i < 4; i++) {
+        User user2 = new User();
+        user2.setName("2");
+        user2.setPassword("2");
+        userService.addUser(user2);
+
+        for (int i = 0; i < 20; i++) {
             Topic topic = new Topic();
             topic.setDescription(String.format("Test topic %s", i));
             topic.setUser(user);
-            topicService.addTopic(topic);
-            for (int j = 0;j< 3;j++){
+            topicService.save(topic);
+            for (int j = 0;j< 40;j++){
                 Message message=new Message();
                 message.setMessage(String.format("Test message %s", j));
                 message.setTopic(topic);
@@ -49,8 +54,6 @@ public class MainController {
                 messageService.addMessage(message);
             }
         }
-
-
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -66,7 +69,9 @@ public class MainController {
 
     @RequestMapping(value = "/topic/{id}", method = RequestMethod.GET)
     public ModelAndView showTopicForm(@PathVariable("id") Integer id) {
+        Topic topic = topicService.getTopicById(id);
         ModelAndView model = new ModelAndView("topic");
+        model.addObject("topic", topic);
         return model;
     }
 }

@@ -18,7 +18,7 @@ public class Topic  implements java.io.Serializable {
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy="topic", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Message> messages;
 
     public Integer getId() {

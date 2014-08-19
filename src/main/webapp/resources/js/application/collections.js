@@ -5,7 +5,7 @@ window.App.Collections.Topics = function (super$) {
     super$.apply(this, arguments);
   }
   Topics.prototype.model = window.App.Models.Topic;
-  Topics.prototype.url = '/topic/all';
+  Topics.prototype.url = '/topics';
   return Topics;
 }(Backbone.Collection);
 window.App.Collections.Messages = function (super$1) {
@@ -15,17 +15,11 @@ window.App.Collections.Messages = function (super$1) {
   }
   Messages.prototype.model = window.App.Models.Message;
   Messages.getCurrentTopicId = function () {
-    var cache$, close, content, open, size$;
-    cache$ = document.URL.split('/');
-    open = cache$[0];
-    size$ = cache$.length;
-    content = size$ > 2 ? [].slice.call(cache$, 1, size$ - 1) : [];
-    close = cache$[size$ - 1];
-    return close;
+    return $('#topicId').val();
   };
   Messages.prototype.url = '/topic/messages/' + Messages.getCurrentTopicId();
   return Messages;
-}(Backbone.Collection);
+}(Backbone.PageableCollection);
 function isOwn$(o, p) {
   return {}.hasOwnProperty.call(o, p);
 }

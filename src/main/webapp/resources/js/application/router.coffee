@@ -1,6 +1,4 @@
 class window.App.Router extends Backbone.Router
-  routes:
-    '':'index'
+  ###routes:
+    '':'index'###
 
-  index: ->
-      console.log("Index!");
