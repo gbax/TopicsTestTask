@@ -25,7 +25,8 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
 
 
   parseState: (resp, queryParams, state, options)->
-    return {totalRecords: resp.items.length}
+    console.log resp.length
+    return {totalRecords: resp.length}
 
   parseRecords: (resp, options)->
-    return resp.items
+    return resp

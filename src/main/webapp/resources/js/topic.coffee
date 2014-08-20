@@ -4,11 +4,12 @@ $(document).ready ->
 
   columns = [{
     name: "id",
+    label: "Номер"
     editable: false,
     cell: Backgrid.IntegerCell.extend({
       orderSeparator: ''
     })
-  },{name: "message",cell: "string"}]
+  },{name: "message",cell: "string", label: "Сообщение"}]
 
   App.messages = new App.Collections.Messages()
 

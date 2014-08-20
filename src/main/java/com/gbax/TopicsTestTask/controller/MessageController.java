@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,9 +21,15 @@ public class MessageController {
     @Autowired
     MessageService messageService;
 
+    @Autowired
+    HttpServletRequest request;
+
     @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<Message> getMessages(@PathVariable("topicId") Integer topicId) {
+        Integer perPage = Integer.parseInt(request.getParameter("per_page"));
+        Integer page = Integer.parseInt(request.getParameter("page"));
+        String order = request.getParameter("order");
         return messageService.getMessagesById(topicId);
     }
 
