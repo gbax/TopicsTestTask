@@ -25,8 +25,6 @@ $(document).ready ->
   $("#grid").append(grid.render().$el);
   $("#paginator").append(paginator.render().$el);
 
-  App.messages.fetch reset: true
-
-  ###.then ->
-    new App.Views.TopicForm collection: App.messages###
+  App.messages.fetch(reset: true).then ->
+    new App.Views.TopicForm collection: App.messages
 

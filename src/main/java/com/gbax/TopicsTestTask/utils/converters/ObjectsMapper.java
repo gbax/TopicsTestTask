@@ -14,6 +14,7 @@ public class ObjectsMapper extends ObjectMapper {
         SimpleModule module = new SimpleModule("message module", new Version(1, 0, 0, "SNAPSHOT"));
         module.addSerializer(new MessageJsonSerializer());
         this.registerModule(module);
+
         module = new SimpleModule("topic module", new Version(1, 0, 0, "SNAPSHOT"));
         module.addSerializer(new TopicJsonSerializer());
         this.registerModule(module);

@@ -23,10 +23,10 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
     sortKey: "sort",
   }
 
-
   parseState: (resp, queryParams, state, options)->
-    console.log resp.length
-    return {totalRecords: resp.length}
+    respJSON = JSON.parse(resp)
+    return {totalRecords: respJSON.total_page}
 
   parseRecords: (resp, options)->
-    return resp
+    respJSON = JSON.parse(resp)
+    return respJSON.items

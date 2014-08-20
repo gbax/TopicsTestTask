@@ -80,8 +80,8 @@ Topic view
 class window.App.Views.TopicForm extends Backbone.Model
   initialize: ->
     addMessage = new window.App.Views.AddMessage(collection: window.App.messages)
-    allMessages = new window.App.Views.MessagesView(collection: window.App.messages).render()
-    $("#messagesTable").append allMessages.el
+    ###allMessages = new window.App.Views.MessagesView(collection: window.App.messages).render()
+    $("#messagesTable").append allMessages.el###
 
 ###
 Message table
@@ -117,6 +117,7 @@ class window.App.Views.AddMessage extends Backbone.View
     e.preventDefault()
     @collection.create {message: @messageEl.val()},{ wait: true }
     @clearForm()
+    @collection.fetch({reset: true});
 
   clearForm: ->
     @messageEl.val('')
