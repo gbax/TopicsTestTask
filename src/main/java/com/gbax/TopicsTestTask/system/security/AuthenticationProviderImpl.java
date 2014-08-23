@@ -36,11 +36,11 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
         User user = userService.getUserByName(username);
 
         if (user == null) {
-            throw new BadCredentialsException("Username not found.");
+            throw new BadCredentialsException("Пользователь не найден в системе");
         }
 
         if (!password.equals(user.getPassword())) {
-            throw new BadCredentialsException("Wrong password.");
+            throw new BadCredentialsException("Неверный пароль");
         }
 
         return new UsernamePasswordAuthenticationToken(user, password, Arrays.asList(new GrantedAuthorityImpl("ROLE_USER")));

@@ -6,10 +6,11 @@ Main view
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   window.App.Views.MainForm = (function(_super) {
+    var columns;
+
     __extends(MainForm, _super);
 
     function MainForm() {
@@ -17,55 +18,92 @@ Main view
     }
 
     MainForm.prototype.initialize = function() {
-      var allTopics, topicForm;
-      topicForm = new window.App.Views.AddTopic({
+      var grid, paginator;
+      window.App.topics = new window.App.Collections.Topics();
+      grid = new Backgrid.Grid({
+        events: {
+          'click th a': function(e) {
+            return $('th', $(this.el)).not($(e.target).parent()).removeClass('descending').removeClass('ascending');
+          }
+        },
+        columns: columns,
         collection: window.App.topics
-      }).render();
-      allTopics = new window.App.Views.TopicsView({
+      });
+      paginator = new Backgrid.Extension.Paginator({
         collection: window.App.topics
-      }).render();
-      return $("#topicsTable").append(allTopics.el);
+      });
+      $("#grid").append(grid.render().$el);
+      $("#paginator").append(paginator.render().$el);
+      window.App.topics.fetch({
+        reset: true
+      });
+      return new window.App.Views.AddTopic({
+        collection: window.App.topics
+      });
     };
+
+    columns = [
+      {
+        name: "id",
+        label: "Номер",
+        editable: false,
+        cell: Backgrid.IntegerCell.extend({
+          orderSeparator: ''
+        })
+      }, {
+        name: "description",
+        label: "Форум",
+        editable: false,
+        cell: Backgrid.UriCell.extend({
+          render: function() {
+            var formattedValue, rawValue;
+            this.$el.empty();
+            rawValue = "/topic/" + this.model.get('id');
+            formattedValue = this.model.get('description');
+            this.$el.append($("<a>", {
+              tabIndex: -1,
+              href: rawValue,
+              title: formattedValue,
+              target: "_self"
+            }).text(formattedValue));
+            this.delegateEvents();
+            return this;
+          }
+        })
+      }, {
+        cell: "id",
+        label: "Действие",
+        editable: false,
+        sortable: false,
+        cell: Backgrid.Cell.extend({
+          events: {
+            'click': 'removeModel'
+          },
+          removeModel: function(e) {
+            e.preventDefault();
+            return this.model.destroy();
+          },
+          render: function() {
+            var formattedValue;
+            this.$el.empty();
+            if (this.model.get('canDelete')) {
+              formattedValue = "Удалить";
+              this.$el.append($("<button>", {
+                tabIndex: -1,
+                type: "button",
+                "class": "delete",
+                title: formattedValue,
+                target: this.target
+              }).text(formattedValue));
+              this.delegateEvents();
+            }
+            return this;
+          }
+        })
+      }
+    ];
 
     return MainForm;
-
-  })(Backbone.View);
-
-
-  /*
-  Topics table
-   */
-
-  window.App.Views.TopicsView = (function(_super) {
-    __extends(TopicsView, _super);
-
-    function TopicsView() {
-      return TopicsView.__super__.constructor.apply(this, arguments);
-    }
-
-    TopicsView.prototype.initialize = function() {
-      ({
-        initialize: function() {}
-      });
-      return this.collection.on('add', this.addOne, this);
-    };
-
-    TopicsView.prototype.tagName = 'tbody';
-
-    TopicsView.prototype.render = function() {
-      this.collection.each(this.addOne, this);
-      return this;
-    };
-
-    TopicsView.prototype.addOne = function(topic) {
-      var viewTopic;
-      viewTopic = new window.App.Views.Topic({
-        model: topic
-      });
-      return this.$el.append(viewTopic.render().el);
-    };
-
-    return TopicsView;
 
   })(Backbone.View);
 
@@ -110,50 +148,6 @@ Main view
   })(Backbone.View);
 
 
-  /*
-  Topic row
-   */
-
-  window.App.Views.Topic = (function(_super) {
-    __extends(Topic, _super);
-
-    function Topic() {
-      return Topic.__super__.constructor.apply(this, arguments);
-    }
-
-    Topic.prototype.initialize = function() {
-      return this.model.on('destroy', this.unrender, this);
-    };
-
-    Topic.prototype.tagName = 'tr';
-
-    Topic.prototype.events = {
-      'click a.delete': 'removeModel'
-    };
-
-    Topic.prototype.removeModel = function() {
-      return this.model.destroy();
-    };
-
-    Topic.prototype.unrender = function() {
-      return this.remove();
-    };
-
-    Topic.prototype.template = window.App.template('topicTemplate');
-
-    Topic.prototype.render = function() {
-      this.$el.html(this.template(this.model.toJSON()));
-      return this;
-    };
-
-    return Topic;
-
-  })(Backbone.View);
-
-
-  /*----------------------------------------------------------------------------------------------------------------- */
-
-
   /*----------------------------------------------------------------------------------------------------------------- */
 
 
@@ -169,54 +163,80 @@ Main view
     }
 
     TopicForm.prototype.initialize = function() {
-      var addMessage;
-      return addMessage = new window.App.Views.AddMessage({
+      var grid, paginator;
+      window.App.messages = new window.App.Collections.Messages();
+      grid = new Backgrid.Grid({
+        events: {
+          'click th a': function(e) {
+            return $('th', $(this.el)).not($(e.target).parent()).removeClass('descending').removeClass('ascending');
+          }
+        },
+        columns: this.columns,
         collection: window.App.messages
       });
-
-      /*allMessages = new window.App.Views.MessagesView(collection: window.App.messages).render()
-      $("#messagesTable").append allMessages.el
-       */
+      paginator = new Backgrid.Extension.Paginator({
+        collection: window.App.messages
+      });
+      $("#grid").append(grid.render().$el);
+      $("#paginator").append(paginator.render().$el);
+      window.App.messages.fetch({
+        reset: true
+      });
+      return new window.App.Views.AddMessage({
+        collection: window.App.messages
+      });
     };
+
+    TopicForm.prototype.columns = [
+      {
+        name: "id",
+        label: "Номер",
+        editable: false,
+        cell: Backgrid.IntegerCell.extend({
+          orderSeparator: ''
+        })
+      }, {
+        name: "message",
+        cell: "string",
+        label: "Сообщение",
+        editable: false,
+        sortable: true
+      }, {
+        cell: "id",
+        label: "Действие",
+        editable: false,
+        sortable: false,
+        cell: Backgrid.Cell.extend({
+          events: {
+            'click': 'removeMessage'
+          },
+          removeMessage: function(e) {
+            e.preventDefault();
+            return this.model.destroy();
+          },
+          render: function() {
+            var formattedValue;
+            this.$el.empty();
+            if (this.model.get('canDelete')) {
+              formattedValue = "Удалить";
+              this.$el.append($("<button>", {
+                tabIndex: -1,
+                type: "button",
+                "class": "delete",
+                title: formattedValue,
+                target: this.target
+              }).text(formattedValue));
+              this.delegateEvents();
+            }
+            return this;
+          }
+        })
+      }
+    ];
 
     return TopicForm;
 
   })(Backbone.Model);
-
-
-  /*
-  Message table
-   */
-
-  window.App.Views.MessagesView = (function(_super) {
-    __extends(MessagesView, _super);
-
-    function MessagesView() {
-      return MessagesView.__super__.constructor.apply(this, arguments);
-    }
-
-    MessagesView.prototype.initialize = function() {
-      return this.collection.on('add', this.addOne, this);
-    };
-
-    MessagesView.prototype.tagName = 'tbody';
-
-    MessagesView.prototype.render = function() {
-      this.collection.each(this.addOne, this);
-      return this;
-    };
-
-    MessagesView.prototype.addOne = function(message) {
-      var viewMessage;
-      viewMessage = new window.App.Views.Message({
-        model: message
-      });
-      return this.$el.append(viewMessage.render().el);
-    };
-
-    return MessagesView;
-
-  })(Backbone.View);
 
 
   /*
@@ -227,7 +247,6 @@ Main view
     __extends(AddMessage, _super);
 
     function AddMessage() {
-      this.errSh = __bind(this.errSh, this);
       return AddMessage.__super__.constructor.apply(this, arguments);
     }
 
@@ -248,62 +267,14 @@ Main view
       }, {
         wait: true
       });
-      this.clearForm();
-      return this.collection.fetch({
-        reset: true
-      });
+      return this.clearForm();
     };
 
     AddMessage.prototype.clearForm = function() {
       return this.messageEl.val('');
     };
 
-    AddMessage.prototype.errSh = function(view, attr, error, selector) {
-      return alert("fook");
-    };
-
     return AddMessage;
-
-  })(Backbone.View);
-
-
-  /*
-  Message row
-   */
-
-  window.App.Views.Message = (function(_super) {
-    __extends(Message, _super);
-
-    function Message() {
-      return Message.__super__.constructor.apply(this, arguments);
-    }
-
-    Message.prototype.initialize = function() {
-      return this.model.on('destroy', this.unrender, this);
-    };
-
-    Message.prototype.tagName = 'tr';
-
-    Message.prototype.events = {
-      'click a.delete': 'removeModel'
-    };
-
-    Message.prototype.removeModel = function() {
-      return this.model.destroy();
-    };
-
-    Message.prototype.unrender = function() {
-      return this.remove();
-    };
-
-    Message.prototype.template = window.App.template('messageTemplate');
-
-    Message.prototype.render = function() {
-      this.$el.html(this.template(this.model.toJSON()));
-      return this;
-    };
-
-    return Message;
 
   })(Backbone.View);
 

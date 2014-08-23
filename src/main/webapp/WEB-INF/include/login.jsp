@@ -6,6 +6,14 @@
     <a href="<c:url value="j_spring_security_logout" />" >Выйти</a>
 </sec:authorize>
 <sec:authorize access="!isAuthenticated()">
+    <c:if test="${not empty sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}">
+        <div class="alert alert-danger">
+                Попытка входа  была неудачна. Попробуйте еще раз.<br/>
+                Причина: <label id="error">${sessionScope["SPRING_SECURITY_LAST_EXCEPTION"].message}</label>.<br>
+        </div>
+    </c:if>
+
+
     <form name='f' action="<c:url value='j_spring_security_check' />" method='POST'>
 
         <div class="authBlock">

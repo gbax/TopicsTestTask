@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,10 +22,17 @@ public class TopicController {
     @Autowired
     TopicService topicService;
 
+    @Autowired
+    HttpServletRequest request;
+
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public List<Topic> topics() {
-        return topicService.getTopics();
+    public String topics() {
+        Integer perPage = Integer.parseInt(request.getParameter("per_page"));
+        Integer page = Integer.parseInt(request.getParameter("page"));
+        String order = request.getParameter("order");
+        String sort = request.getParameter("sort");
+        return topicService.getTopicsJSON(perPage, page, order, sort);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")

@@ -33,12 +33,21 @@ public class TopicDao {
         return entityManager.find(Topic.class, id);
     }
 
-    public List<Topic> getTopics() {
+    public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Topic> query = criteriaBuilder.createQuery(Topic.class);
         Root<Topic> topicRoot = query.from(Topic.class);
+        query.select(topicRoot);
+        if (sort != null && order != null) {
+            query.orderBy(order.equals("asc") ?
+                    criteriaBuilder.asc(topicRoot.get(sort)) :
+                    criteriaBuilder.desc(topicRoot.get(sort)));
+        }
         TypedQuery<Topic> query1 = entityManager.createQuery(query);
-
+        if (perPage != null && first != null) {
+            query1.setFirstResult(first);
+            query1.setMaxResults(perPage);
+        }
         return query1.getResultList();
     }
 

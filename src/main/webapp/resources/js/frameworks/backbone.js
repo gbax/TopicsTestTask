@@ -172,7 +172,7 @@
   var eventSplitter = /\s+/;
 
   // Implement fancy features of the Events API such as multiple event
-  // names `"change blur"` and jQuery-style event maps `{change: action}`
+  // names `"change blur"` and jQuery-style,css event maps `{change: action}`
   // in terms of the existing API.
   var eventsApi = function(obj, action, name, rest) {
     if (!name) return true;
@@ -309,7 +309,7 @@
       var attr, attrs, unset, changes, silent, changing, prev, current;
       if (key == null) return this;
 
-      // Handle both `"key", value` and `{key: value}` -style arguments.
+      // Handle both `"key", value` and `{key: value}` -style,css arguments.
       if (typeof key === 'object') {
         attrs = key;
         options = val;
@@ -446,7 +446,7 @@
     save: function(key, val, options) {
       var attrs, method, xhr, attributes = this.attributes;
 
-      // Handle both `"key", value` and `{key: value}` -style arguments.
+      // Handle both `"key", value` and `{key: value}` -style,css arguments.
       if (key == null || typeof key === 'object') {
         attrs = key;
         options = val;

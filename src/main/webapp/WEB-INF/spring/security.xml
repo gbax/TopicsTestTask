@@ -8,6 +8,7 @@
 
     <http auto-config='true' use-expressions="true">
         <http-basic />
+        <form-login login-page="/index" authentication-failure-url = "/loginfailed" />
     </http>
 
     <authentication-manager>

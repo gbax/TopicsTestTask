@@ -30,13 +30,17 @@ public class MessageDao {
         return entityManager.find(Message.class, id);
     }
 
-    public List<Message> getMessagesByTopic(Topic topic, Integer perPage, Integer first) {
-
+    public List<Message> getMessagesByTopic(Topic topic, Integer perPage, Integer first, String order, String sort) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
         Root<Message> topicRoot = query.from(Message.class);
         ParameterExpression<Topic> p = criteriaBuilder.parameter(Topic.class);
         query.select(topicRoot).where(criteriaBuilder.equal(topicRoot.get("topic"), p));
+        if (sort != null && order != null) {
+            query.orderBy(order.equals("asc") ?
+                    criteriaBuilder.asc(topicRoot.get(sort)) :
+                    criteriaBuilder.desc(topicRoot.get(sort)));
+        }
         TypedQuery<Message> query1 = entityManager.createQuery(query);
         query1.setParameter(p, topic);
         if (perPage != null && first != null) {

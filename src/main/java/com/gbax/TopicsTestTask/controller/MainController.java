@@ -8,6 +8,7 @@ import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,6 +60,12 @@ public class MainController {
     @RequestMapping(method = RequestMethod.GET)
     public String index() {
         return "redirect:/index";
+    }
+
+    @RequestMapping(value="/loginfailed", method = RequestMethod.GET)
+    public String loginError(ModelMap model) {
+        model.addAttribute("error", "true");
+        return "index";
     }
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)

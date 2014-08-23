@@ -8,3 +8,7 @@ window.App.template = (id) ->
     Handlebars.compile($('#' + id).html())
   else
     null
+
+window.App.getContextPath = () ->
+  if $("#contextPath").value then $("#contextPath").value else ""
+

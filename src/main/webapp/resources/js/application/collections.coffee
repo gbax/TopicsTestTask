@@ -1,21 +1,18 @@
-class window.App.Collections.Topics extends Backbone.Collection
+###
+Topics
+###
+class window.App.Collections.Topics extends Backbone.PageableCollection
   model: window.App.Models.Topic
+  initialize: ->
+    @on 'destroy', @renderOnDestroy, @
+    @on 'remove', @fetchTopics, @
+    @on 'add', @fetchTopics, @
+
   url: '/topics'
-
-class window.App.Collections.Messages extends Backbone.PageableCollection
-#  model: window.App.Models.Message
-#  mode: "client"
-  @getCurrentTopicId: ->
-    $('#topicId').val()
-  url: '/topic/messages/' + @getCurrentTopicId()
-
 
   state: {
     pageSize: 5,
-    sortKey: "updated",
-    order: 1
   }
-
 
   queryParams: {
     totalPages: null,
@@ -30,3 +27,52 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
   parseRecords: (resp, options)->
     respJSON = JSON.parse(resp)
     return respJSON.items
+
+  fetchTopics: (e) ->
+    @fetch {reset: true}
+
+  renderOnDestroy: () ->
+    if @length == 0
+      if @hasPreviousPage()
+        @getPreviousPage({fetch: true})
+
+###
+Messages
+###
+class window.App.Collections.Messages extends Backbone.PageableCollection
+  model: window.App.Models.Message
+  initialize: ->
+    @on 'destroy', @renderMessagesOnDestroy, @
+    @on 'remove', @fetchMessages, @
+    @on 'add', @fetchMessages, @
+
+  @getCurrentTopicId: ->
+    $('#topicId').val()
+
+  url: '/topic/messages/' + @getCurrentTopicId()
+
+  state: {
+    pageSize: 5
+  }
+
+  queryParams: {
+    totalPages: null
+    totalRecords: null
+    sortKey: "sort"
+  }
+
+  parseState: (resp, queryParams, state, options)->
+    respJSON = JSON.parse(resp)
+    return {totalRecords: respJSON.total_page}
+
+  parseRecords: (resp, options)->
+    respJSON = JSON.parse(resp)
+    return respJSON.items
+
+  fetchMessages:  () ->
+    @fetch {reset: true}
+
+  renderMessagesOnDestroy: () ->
+    if @length == 0
+      if @hasPreviousPage()
+        @getPreviousPage({fetch: true})

@@ -24,14 +24,11 @@ public class MessageController {
     @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String getMessages(@PathVariable("topicId") Integer topicId) {
-
-
-
         Integer perPage = Integer.parseInt(request.getParameter("per_page"));
         Integer page = Integer.parseInt(request.getParameter("page"));
         String order = request.getParameter("order");
-        String messagesByTopicIdJSON = messageService.getMessagesByTopicIdJSON(topicId, perPage, page);
-        return messagesByTopicIdJSON;
+        String sort = request.getParameter("sort");
+        return messageService.getMessagesByTopicIdJSON(topicId, perPage, page, order, sort);
     }
 
     @RequestMapping(value = "{topicId}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")

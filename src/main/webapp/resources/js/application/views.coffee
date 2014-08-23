@@ -3,29 +3,86 @@ Main view
 ###
 class window.App.Views.MainForm extends Backbone.View
   initialize: ->
-    topicForm = new window.App.Views.AddTopic(collection: window.App.topics).render()
-    allTopics = new window.App.Views.TopicsView(collection: window.App.topics).render()
-    $("#topicsTable").append allTopics.el
+    window.App.topics = new window.App.Collections.Topics()
 
-###
-Topics table
-###
-class window.App.Views.TopicsView extends Backbone.View
-  initialize: ->
-    initialize: ->
-    @collection.on 'add', @addOne, @
+    grid = new Backgrid.Grid({
+      events:
+        'click th a' : (e) ->
+          $('th', $(@.el))
+            .not($(e.target).parent())
+            .removeClass('descending')
+            .removeClass('ascending')
 
-  tagName: 'tbody'
+      columns: columns,
+      collection: window.App.topics
+    })
 
-  render: ->
-    @collection.each @addOne, this
-    this
+    paginator = new Backgrid.Extension.Paginator({
+      collection: window.App.topics
+    });
 
-  addOne: (topic) ->
-    viewTopic = new window.App.Views.Topic model: topic
+    $("#grid").append(grid.render().$el);
+    $("#paginator").append(paginator.render().$el);
 
-    @$el.append viewTopic.render().el
+    window.App.topics.fetch(reset: true)
 
+    new window.App.Views.AddTopic(collection: window.App.topics)
+
+
+  columns = [{
+      name: "id",
+      label: "Номер"
+      editable: false,
+      cell: Backgrid.IntegerCell.extend({
+        orderSeparator: ''
+      })
+    },{
+      name: "description",
+      label: "Форум"
+      editable: false
+      cell: Backgrid.UriCell.extend({
+        render: () ->
+          this.$el.empty();
+          rawValue = "/topic/" + @model.get('id')
+          formattedValue = @model.get('description')
+          this.$el.append($("<a>", {
+            tabIndex: -1,
+            href: rawValue,
+            title: formattedValue,
+            target: "_self"
+          }).text(formattedValue));
+          @delegateEvents();
+          @
+      })
+    },{
+      cell: "id"
+      label: "Действие"
+      editable: false
+      sortable: false
+      cell: Backgrid.Cell.extend({
+
+        events:
+          'click': 'removeModel'
+
+        removeModel: (e) ->
+          e.preventDefault();
+          @model.destroy()
+
+        render: () ->
+          this.$el.empty();
+          if @model.get('canDelete')
+            formattedValue = "Удалить"
+            this.$el.append($("<button>", {
+              tabIndex: -1,
+              type: "button"
+              class: "delete"
+              title: formattedValue,
+              target: @target
+            }).text(formattedValue));
+            @delegateEvents();
+          @
+      })
+  }]
 
 ###
 Add topic form
@@ -47,31 +104,6 @@ class window.App.Views.AddTopic extends Backbone.View
   clearForm: ->
     @descriptionEl.val('')
 
-###
-Topic row
-###
-class window.App.Views.Topic extends Backbone.View
-  initialize: ->
-    @model.on 'destroy', @unrender, @
-
-  tagName: 'tr'
-
-  events:
-    'click a.delete': 'removeModel'
-
-  removeModel: ->
-    @model.destroy()
-
-  unrender: ->
-    @remove()
-
-  template: window.App.template 'topicTemplate'
-
-  render: ->
-    @$el.html @template @model.toJSON()
-    this
-
-###-----------------------------------------------------------------------------------------------------------------###
 ###-----------------------------------------------------------------------------------------------------------------###
 
 ###
@@ -79,27 +111,74 @@ Topic view
 ###
 class window.App.Views.TopicForm extends Backbone.Model
   initialize: ->
-    addMessage = new window.App.Views.AddMessage(collection: window.App.messages)
-    ###allMessages = new window.App.Views.MessagesView(collection: window.App.messages).render()
-    $("#messagesTable").append allMessages.el###
+    window.App.messages = new window.App.Collections.Messages()
 
-###
-Message table
-###
-class window.App.Views.MessagesView extends Backbone.View
-  initialize: ->
-    @collection.on 'add', @addOne, @
+    grid = new Backgrid.Grid({
+      events:
+        'click th a' : (e) ->
+          $('th', $(@.el))
+            .not($(e.target).parent())
+            .removeClass('descending')
+            .removeClass('ascending')
 
-  tagName: 'tbody'
+      columns: @columns
+      collection: window.App.messages
+    })
 
-  render: ->
-    @collection.each @addOne, this
-    this
+    paginator = new Backgrid.Extension.Paginator({
+      collection: window.App.messages
+    });
 
-  addOne: (message) ->
-    viewMessage = new window.App.Views.Message model: message
+    $("#grid").append(grid.render().$el);
+    $("#paginator").append(paginator.render().$el);
 
-    @$el.append viewMessage.render().el
+    window.App.messages.fetch(reset: true)
+
+    new window.App.Views.AddMessage(collection: window.App.messages)
+
+
+  columns: [{
+      name: "id",
+      label: "Номер"
+      editable: false
+      cell: Backgrid.IntegerCell.extend({
+        orderSeparator: ''
+      })
+    },{
+      name: "message",
+      cell: "string",
+      label: "Сообщение",
+      editable: false
+      sortable: true
+    },{
+      cell: "id"
+      label: "Действие"
+      editable: false
+      sortable: false
+      cell: Backgrid.Cell.extend({
+
+        events:
+          'click': 'removeMessage'
+
+        removeMessage: (e) ->
+          e.preventDefault();
+          @model.destroy()
+
+        render: () ->
+          this.$el.empty();
+          if @model.get('canDelete')
+            formattedValue = "Удалить"
+            this.$el.append($("<button>", {
+              tabIndex: -1,
+              type: "button"
+              class: "delete"
+              title: formattedValue,
+              target: @target
+            }).text(formattedValue));
+            @delegateEvents();
+          @
+      })
+    }]
 
 ###
 Add message form
@@ -117,36 +196,6 @@ class window.App.Views.AddMessage extends Backbone.View
     e.preventDefault()
     @collection.create {message: @messageEl.val()},{ wait: true }
     @clearForm()
-    @collection.fetch({reset: true});
 
   clearForm: ->
     @messageEl.val('')
-
-  errSh:  (view, attr, error, selector) =>
-    alert("fook")
-
-
-###
-Message row
-###
-class window.App.Views.Message extends Backbone.View
-  initialize: ->
-    @model.on 'destroy', @unrender, @
-
-  tagName: 'tr'
-
-  events:
-    'click a.delete': 'removeModel'
-
-  removeModel: ->
-    @model.destroy()
-
-  unrender: ->
-    @remove()
-
-  template: window.App.template 'messageTemplate'
-
-  render: ->
-    @$el.html @template @model.toJSON()
-    this
-
