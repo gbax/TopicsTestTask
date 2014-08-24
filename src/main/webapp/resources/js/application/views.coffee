@@ -55,6 +55,12 @@ class window.App.Views.MainForm extends Backbone.View
           @
       })
     },{
+      name: "updateDate",
+      cell: "string",
+      label: "Дата создания",
+      editable: false
+      sortable: true
+    },{
       cell: "id"
       label: "Действие"
       editable: false
@@ -66,7 +72,13 @@ class window.App.Views.MainForm extends Backbone.View
 
         removeModel: (e) ->
           e.preventDefault();
-          @model.destroy()
+          collection = @model.collection
+          @model.destroy
+            dataType: "text",
+            success: (model, response) ->
+              collection.renderOnDestroy()
+            error: (model, response) ->
+              alert "Произошла ошибка при удалении. Обновите страницу и повторите"
 
         render: () ->
           this.$el.empty();
@@ -151,6 +163,12 @@ class window.App.Views.TopicForm extends Backbone.Model
       editable: false
       sortable: true
     },{
+      name: "date",
+      cell: "string",
+      label: "Дата создания",
+      editable: false
+      sortable: true
+    },{
       cell: "id"
       label: "Действие"
       editable: false
@@ -162,7 +180,10 @@ class window.App.Views.TopicForm extends Backbone.Model
 
         removeMessage: (e) ->
           e.preventDefault();
-          @model.destroy()
+          @model.destroy
+            dataType: "text",
+            error: (model, response) ->
+              alert "Произошла ошибка при удалении. Обновите страницу и повторите"
 
         render: () ->
           this.$el.empty();

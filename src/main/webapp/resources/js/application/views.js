@@ -71,6 +71,12 @@ Main view
           }
         })
       }, {
+        name: "updateDate",
+        cell: "string",
+        label: "Дата создания",
+        editable: false,
+        sortable: true
+      }, {
         cell: "id",
         label: "Действие",
         editable: false,
@@ -80,8 +86,18 @@ Main view
             'click': 'removeModel'
           },
           removeModel: function(e) {
+            var collection;
             e.preventDefault();
-            return this.model.destroy();
+            collection = this.model.collection;
+            return this.model.destroy({
+              dataType: "text",
+              success: function(model, response) {
+                return collection.renderOnDestroy();
+              },
+              error: function(model, response) {
+                return alert("Произошла ошибка при удалении. Обновите страницу и повторите");
+              }
+            });
           },
           render: function() {
             var formattedValue;
@@ -202,6 +218,12 @@ Main view
         editable: false,
         sortable: true
       }, {
+        name: "date",
+        cell: "string",
+        label: "Дата создания",
+        editable: false,
+        sortable: true
+      }, {
         cell: "id",
         label: "Действие",
         editable: false,
@@ -212,7 +234,12 @@ Main view
           },
           removeMessage: function(e) {
             e.preventDefault();
-            return this.model.destroy();
+            return this.model.destroy({
+              dataType: "text",
+              error: function(model, response) {
+                return alert("Произошла ошибка при удалении. Обновите страницу и повторите");
+              }
+            });
           },
           render: function() {
             var formattedValue;

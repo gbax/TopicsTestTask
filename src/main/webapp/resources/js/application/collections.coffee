@@ -4,20 +4,18 @@ Topics
 class window.App.Collections.Topics extends Backbone.PageableCollection
   model: window.App.Models.Topic
   initialize: ->
-    @on 'destroy', @renderOnDestroy, @
-    @on 'remove', @fetchTopics, @
     @on 'add', @fetchTopics, @
 
   url: '/topics'
 
   state: {
-    pageSize: 5,
+    pageSize: 5
   }
 
   queryParams: {
-    totalPages: null,
-    totalRecords: null,
-    sortKey: "sort",
+    totalPages: null
+    totalRecords: null
+    sortKey: "sort"
   }
 
   parseState: (resp, queryParams, state, options)->
@@ -35,6 +33,8 @@ class window.App.Collections.Topics extends Backbone.PageableCollection
     if @length == 0
       if @hasPreviousPage()
         @getPreviousPage({fetch: true})
+    else
+      @fetch {reset: true}
 
 ###
 Messages

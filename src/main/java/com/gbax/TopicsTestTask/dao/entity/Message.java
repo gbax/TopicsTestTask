@@ -3,6 +3,7 @@ package com.gbax.TopicsTestTask.dao.entity;
 import org.codehaus.jackson.annotate.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "message")
@@ -16,12 +17,15 @@ public class Message implements java.io.Serializable {
     private String message;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "messageID")
+    @JoinColumn(name = "topic_id")
     private Topic topic;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
+    @Column(nullable = false)
+    private Date date = new Date();
 
     public Integer getId() {
         return id;
@@ -55,5 +59,13 @@ public class Message implements java.io.Serializable {
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

@@ -18,8 +18,6 @@ Topics
     Topics.prototype.model = window.App.Models.Topic;
 
     Topics.prototype.initialize = function() {
-      this.on('destroy', this.renderOnDestroy, this);
-      this.on('remove', this.fetchTopics, this);
       return this.on('add', this.fetchTopics, this);
     };
 
@@ -62,6 +60,10 @@ Topics
             fetch: true
           });
         }
+      } else {
+        return this.fetch({
+          reset: true
+        });
       }
     };
 

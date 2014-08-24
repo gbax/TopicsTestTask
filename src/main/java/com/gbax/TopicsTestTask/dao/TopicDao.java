@@ -34,6 +34,9 @@ public class TopicDao {
     }
 
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
+        if (sort != null && sort.equals("updateDate")) {
+            sort = "message.date";
+        }
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Topic> query = criteriaBuilder.createQuery(Topic.class);
         Root<Topic> topicRoot = query.from(Topic.class);

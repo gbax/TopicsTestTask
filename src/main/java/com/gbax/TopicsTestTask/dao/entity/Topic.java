@@ -1,5 +1,9 @@
 package com.gbax.TopicsTestTask.dao.entity;
 
+import org.hibernate.annotations.JoinColumnOrFormula;
+import org.hibernate.annotations.JoinColumnsOrFormulas;
+import org.hibernate.annotations.JoinFormula;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -20,6 +24,13 @@ public class Topic  implements java.io.Serializable {
 
     @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Message> messages;
+
+    @ManyToOne
+    @JoinColumnsOrFormulas({
+            @JoinColumnOrFormula(formula =
+            @JoinFormula(value = "(select m.id from message m where m.topic_id = id order by m.date desc LIMIT 1)"))
+    })
+    private Message message;
 
     public Integer getId() {
         return id;
@@ -51,5 +62,13 @@ public class Topic  implements java.io.Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
     }
 }

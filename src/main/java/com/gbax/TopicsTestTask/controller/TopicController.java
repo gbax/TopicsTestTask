@@ -2,6 +2,8 @@ package com.gbax.TopicsTestTask.controller;
 
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.service.TopicService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by abayanov
@@ -18,6 +23,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/topics")
 public class TopicController {
+
+    final Logger logger = LoggerFactory.getLogger(TopicController.class);
 
     @Autowired
     TopicService topicService;

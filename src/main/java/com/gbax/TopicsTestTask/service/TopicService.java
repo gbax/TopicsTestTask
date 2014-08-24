@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static argo.jdom.JsonNodeBuilders.*;
@@ -72,6 +73,7 @@ public class TopicService {
             final JsonObjectNodeBuilder topicBuilder = anObjectBuilder();
             topicBuilder.withField("id", aNumberBuilder(topic.getId().toString()));
             topicBuilder.withField("description", aStringBuilder(topic.getDescription()));
+            topicBuilder.withField("updateDate", aStringBuilder(new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getMessage().getDate())));
             topicBuilder.withField("canDelete", user == null ? aFalseBuilder() :
                     topic.getUser().getId().equals(user.getId()) ? aTrueBuilder() : aFalseBuilder());
             topicsBuider.withElement(topicBuilder);

@@ -11,6 +11,7 @@ import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static argo.jdom.JsonNodeBuilders.*;
@@ -71,6 +72,7 @@ public class MessageService {
             final JsonObjectNodeBuilder messageBuilder = anObjectBuilder();
             messageBuilder.withField("id", aNumberBuilder(message.getId().toString()));
             messageBuilder.withField("message", aStringBuilder(message.getMessage()));
+            messageBuilder.withField("date", aStringBuilder(new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(message.getDate())));
             messageBuilder.withField("canDelete", user == null ? aFalseBuilder() :
                     message.getUser().getId().equals(user.getId()) ? aTrueBuilder() : aFalseBuilder());
             messagesBuider.withElement(messageBuilder);
