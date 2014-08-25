@@ -10,6 +10,8 @@ import com.gbax.TopicsTestTask.dao.entity.User;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -49,6 +51,7 @@ public class MessageService {
         return messageDao.addMessage(message);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void remove(Integer id) {
         Message message = messageDao.getMessagesById(id);
         messageDao.remove(message);
