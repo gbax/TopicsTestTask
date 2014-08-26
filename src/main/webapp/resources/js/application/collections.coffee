@@ -44,7 +44,7 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
   initialize: ->
     @on 'destroy', @renderMessagesOnDestroy, @
     @on 'remove', @fetchMessages, @
-    @on 'error', @alrt, @
+    @on 'error', @errorHandle, @
     @on 'add', @fetchMessages, @
 
   @getCurrentTopicId: ->
@@ -73,8 +73,8 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
   fetchMessages:  () ->
     @fetch {reset: true}
 
-  alrt: ()->
-    alert "fuck"
+  errorHandle: (e, m)->
+    window.location=window.App.getContextPath()+"/index?error="+ m.responseJSON.error.error
 
   renderMessagesOnDestroy: () ->
     if @length == 0

@@ -7,6 +7,7 @@ import com.gbax.TopicsTestTask.dao.MessageDao;
 import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.dao.entity.User;
+import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +39,17 @@ public class MessageService {
     public List<Message> getMessagesById(Integer id, Integer perPage, Integer page, String order, String sort) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
         if (topic == null) {
-            throw new EntityNotFoundException("Нету");
+            throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         }
         return messageDao.getMessagesByTopic(topic, perPage, page, order, sort);
     }
 
-    public List<Message> getMessagesById(Integer id) {
+    public List<Message> getMessagesById(Integer id) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
         return messageDao.getMessagesByTopic(topic, null, null, null, null);
     }
 
-    public Message addMessageToTopic(Integer id, Message message) {
+    public Message addMessageToTopic(Integer id, Message message) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
         message.setTopic(topic);
         message.setUser(securityService.getSecurityPrincipal());

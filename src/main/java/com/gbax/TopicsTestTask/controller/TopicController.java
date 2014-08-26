@@ -34,8 +34,9 @@ public class TopicController {
     HttpServletRequest request;
 
     @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public void handleEntityNFEx(final Exception e, final HttpServletRequest request,
+    public void handleEntityNotFoundException(final Exception e, final HttpServletRequest request,
                                  Writer writer) throws IOException {
         writer.write(String.format(
                 "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",

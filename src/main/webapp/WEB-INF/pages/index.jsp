@@ -13,6 +13,14 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2 center">
             <c:import url="../include/login.jsp"/>
+            <c:if test="${not empty  errors}">
+            <div class="alert alert-danger">
+                <c:forEach items="${errors}" var="err">
+                    ${err}
+                    <br/>
+                </c:forEach>
+            </div>
+            </c:if>
             <aside class="note">
                 <h3>Список форумов</h3>
             </aside>

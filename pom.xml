@@ -17,6 +17,7 @@
     </repositories>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.1.0.RELEASE</spring.version>
         <hibernate.version>4.0.1.Final</hibernate.version>
     </properties>

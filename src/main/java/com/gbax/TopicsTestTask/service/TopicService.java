@@ -6,6 +6,7 @@ import argo.jdom.JsonObjectNodeBuilder;
 import com.gbax.TopicsTestTask.dao.TopicDao;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.dao.entity.User;
+import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class TopicService {
 
     public Topic getTopicById(Integer id) throws EntityNotFoundException {
         Topic topicById = topicDao.getTopicById(id);
-        if (topicById == null) throw new EntityNotFoundException("ergewg");
+        if (topicById == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         return topicById;
     }
 

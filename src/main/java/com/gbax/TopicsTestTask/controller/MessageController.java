@@ -26,16 +26,16 @@ public class MessageController {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public void handleEntityNFEx(final Exception e, final HttpServletRequest request,
+    public void handleEntityNotFoundException(final EntityNotFoundException e, final HttpServletRequest request,
                                    Writer writer) throws IOException {
         writer.write(String.format(
-                "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",
-                e.getClass(), e.getMessage()));
+                "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
+                e.getClass(), e.getError().getId()));
     }
 
     @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String getMessages(@PathVariable("topicId") Integer topicId) throws EntityNotFoundException {
+    public String getMessages(@PathVariable("topicId") Integer topicId) throws EntityNotFoundException, InterruptedException {
         Integer perPage = Integer.parseInt(request.getParameter("per_page"));
         Integer page = Integer.parseInt(request.getParameter("page"));
         String order = request.getParameter("order");
@@ -47,13 +47,13 @@ public class MessageController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Message create(@PathVariable("topicId") Integer topicId,
-                          @RequestBody Message message) throws IOException {
+                          @RequestBody Message message) throws EntityNotFoundException {
         return messageService.addMessageToTopic(topicId, message);
     }
 
     @RequestMapping(value = "/{topicId}/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void remove(@PathVariable("topicId") Integer topicId, @PathVariable("id") Integer id) {
+    public void remove(@PathVariable("topicId") Integer topicId, @PathVariable("id") Integer id) throws InterruptedException {
         messageService.remove(id);
     }
 }
