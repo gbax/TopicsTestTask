@@ -6,12 +6,12 @@ import argo.jdom.JsonObjectNodeBuilder;
 import com.gbax.TopicsTestTask.dao.TopicDao;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.dao.entity.User;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Isolation;
 
 import java.text.SimpleDateFormat;
@@ -40,8 +40,10 @@ public class TopicService {
         return topicDao.addTopic(topic);
     }
 
-    public Topic getTopicById(Integer id) {
-        return topicDao.getTopicById(id);
+    public Topic getTopicById(Integer id) throws EntityNotFoundException {
+        Topic topicById = topicDao.getTopicById(id);
+        if (topicById == null) throw new EntityNotFoundException("ergewg");
+        return topicById;
     }
 
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
@@ -49,7 +51,7 @@ public class TopicService {
     }
 
     public List<Topic> getTopics() {
-        return topicDao.getTopics(null,  null,  null,  null);
+        return topicDao.getTopics(null, null, null, null);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

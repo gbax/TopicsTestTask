@@ -30,7 +30,8 @@ public class TopicDao {
     }
 
     public Topic getTopicById(Integer id) {
-        return entityManager.find(Topic.class, id);
+        Topic topic = entityManager.find(Topic.class, id);
+        return topic;
     }
 
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {

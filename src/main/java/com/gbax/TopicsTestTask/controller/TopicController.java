@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
@@ -31,6 +32,15 @@ public class TopicController {
 
     @Autowired
     HttpServletRequest request;
+
+    @ExceptionHandler(Throwable.class)
+    @ResponseBody
+    public void handleEntityNFEx(final Exception e, final HttpServletRequest request,
+                                 Writer writer) throws IOException {
+        writer.write(String.format(
+                "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",
+                e.getClass(), e.getMessage()));
+    }
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @ResponseBody

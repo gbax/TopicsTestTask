@@ -2,6 +2,7 @@ package com.gbax.TopicsTestTask.controller;
 
 import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.service.MessageService;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 @Controller
@@ -21,9 +23,19 @@ public class MessageController {
     @Autowired
     HttpServletRequest request;
 
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public void handleEntityNFEx(final Exception e, final HttpServletRequest request,
+                                   Writer writer) throws IOException {
+        writer.write(String.format(
+                "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",
+                e.getClass(), e.getMessage()));
+    }
+
     @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String getMessages(@PathVariable("topicId") Integer topicId) {
+    public String getMessages(@PathVariable("topicId") Integer topicId) throws EntityNotFoundException {
         Integer perPage = Integer.parseInt(request.getParameter("per_page"));
         Integer page = Integer.parseInt(request.getParameter("page"));
         String order = request.getParameter("order");

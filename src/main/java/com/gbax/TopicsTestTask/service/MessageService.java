@@ -7,6 +7,7 @@ import com.gbax.TopicsTestTask.dao.MessageDao;
 import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.dao.entity.User;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,11 @@ public class MessageService {
         messageDao.addMessage(message);
     }
 
-    public List<Message> getMessagesById(Integer id, Integer perPage, Integer page, String order, String sort) {
+    public List<Message> getMessagesById(Integer id, Integer perPage, Integer page, String order, String sort) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
+        if (topic == null) {
+            throw new EntityNotFoundException("Нету");
+        }
         return messageDao.getMessagesByTopic(topic, perPage, page, order, sort);
     }
 
@@ -57,7 +61,7 @@ public class MessageService {
         messageDao.remove(message);
     }
 
-    public String getMessagesByTopicIdJSON(Integer id, Integer perPage, Integer page, String order, String sort) {
+    public String getMessagesByTopicIdJSON(Integer id, Integer perPage, Integer page, String order, String sort) throws EntityNotFoundException {
         List<Message> messages = getMessagesById(id);
         int size = messages.size();
         int first = 0;

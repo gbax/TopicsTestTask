@@ -6,16 +6,17 @@ import com.gbax.TopicsTestTask.dao.entity.User;
 import com.gbax.TopicsTestTask.service.MessageService;
 import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.service.UserService;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.Writer;
 
 
 @Controller
@@ -30,6 +31,15 @@ public class MainController {
 
     @Autowired
     TopicService topicService;
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseBody
+    public void handleEntityNFEx(final EntityNotFoundException e, final HttpServletRequest request,
+                                 Writer writer) throws IOException {
+        writer.write(String.format(
+                "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",
+                e.getClass(), e.getMessage()));
+    }
 
     public void fillData(){
         User user = new User();
@@ -75,7 +85,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "/topic/{id}", method = RequestMethod.GET)
-    public ModelAndView showTopicForm(@PathVariable("id") Integer id) {
+    public ModelAndView showTopicForm(@PathVariable("id") Integer id) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
         ModelAndView model = new ModelAndView("topic");
         model.addObject("topic", topic);
