@@ -77,7 +77,7 @@ public class TopicService {
             final JsonObjectNodeBuilder topicBuilder = anObjectBuilder();
             topicBuilder.withField("id", aNumberBuilder(topic.getId().toString()));
             topicBuilder.withField("description", aStringBuilder(topic.getDescription()));
-            topicBuilder.withField("updateDate", aStringBuilder(topic.getMessage()!= null ? new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getMessage().getDate()) : ""));
+            topicBuilder.withField("updateDate", aStringBuilder(/*topic.getMessage()!= null ? new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getMessage().getDate()) : */"")); //todo
             topicBuilder.withField("canDelete", canDelete ? aTrueBuilder() : aFalseBuilder());
             topicsBuider.withElement(topicBuilder);
         }

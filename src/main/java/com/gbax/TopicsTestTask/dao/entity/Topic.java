@@ -24,16 +24,17 @@ public class Topic  implements java.io.Serializable {
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "topic")
     private List<Message> messages;
 
-    @ManyToOne
+    //TODO Сделать обновляемое поле!
+/*    @ManyToOne
     @NotFound(action= NotFoundAction.IGNORE)
     @JoinColumnsOrFormulas({
             @JoinColumnOrFormula(formula =
             @JoinFormula(value = "(select m.id from message m where m.topic_id = id order by m.date desc LIMIT 1)"))
     })
-    private Message message;
+    private Message message;*/
 
     @Version
     private Integer version;
@@ -70,13 +71,13 @@ public class Topic  implements java.io.Serializable {
         this.user = user;
     }
 
-    public Message getMessage() {
+/*    public Message getMessage() {
         return message;
     }
 
     public void setMessage(Message message) {
         this.message = message;
-    }
+    }*/
 
     public Integer getVersion() {
         return version;

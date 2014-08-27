@@ -4,6 +4,9 @@ import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
+import org.h2.jdbc.JdbcSQLException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,8 @@ public class TopicDao {
 
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    MessageDao messageDao;
 
     @Transactional
     public Topic addTopic(Topic topic) {
@@ -36,6 +41,12 @@ public class TopicDao {
 
     public Topic getTopicById(Integer id) {
         Topic topic = entityManager.find(Topic.class, id);
+        return topic;
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Topic getTopicByIdWithLock(Integer id) {
+        Topic topic = entityManager.find(Topic.class, id, LockModeType.PESSIMISTIC_READ);
         return topic;
     }
 
@@ -63,16 +74,19 @@ public class TopicDao {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void remove(Integer topicID) throws EntityNotFoundException {
-        Topic topic = getTopicById(topicID);
+        try {
+
+
+        Topic topic = getTopicByIdWithLock(topicID);
         if (topic == null) {
             throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         }
-        //entityManager.lock(topic, LockModeType.WRITE);
-        for (Message message: topic.getMessages()) {
-            entityManager.remove(message);
-        }
-
+        List<Message> messagesByTopic = messageDao.getMessagesByTopic(topic);
 
         entityManager.remove(topic);
+        } catch (ConstraintViolationException e) {
+            int t= 1;
+
+        }
     }
 }

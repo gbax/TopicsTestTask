@@ -33,6 +33,11 @@ public class MessageDao {
         return entityManager.find(Message.class, id);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Message getMessagesByIdWithLock(Integer id) {
+        return entityManager.find(Message.class, id, LockModeType.PESSIMISTIC_READ);
+    }
+
     @Transactional(readOnly = true)
     public List<Message> getMessagesByTopic(Topic topic, Integer perPage, Integer first, String order, String sort) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -56,11 +61,29 @@ public class MessageDao {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void remove(Integer messageId) throws EntityNotFoundException {
-        Message message = getMessagesById(messageId);
+        Message message = getMessagesByIdWithLock(messageId);
         if (message == null) {
             throw new EntityNotFoundException(Errors.MESSAGE_NOT_FOUND);
         }
-        //entityManager.lock(message, LockModeType.WRITE);
         entityManager.remove(message);
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public List<Message> getMessagesByTopic(Topic topic) {  //todo
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
+        Root<Message> topicRoot = query.from(Message.class);
+        ParameterExpression<Topic> p = criteriaBuilder.parameter(Topic.class);
+        query.select(topicRoot).where(criteriaBuilder.equal(topicRoot.get("topic"), p));
+        TypedQuery<Message> query1 = entityManager.createQuery(query);
+        query1.setParameter(p, topic);
+        List<Message> resultList = query1.getResultList();
+
+        for (Message message: resultList) {
+
+            entityManager.remove(message);
+        }
+        entityManager.flush();
+        return resultList;
     }
 }
