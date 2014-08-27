@@ -46,20 +46,20 @@ public class MessageService {
 
     public List<Message> getMessagesById(Integer id) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
+        if (topic == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         return messageDao.getMessagesByTopic(topic, null, null, null, null);
     }
 
     public Message addMessageToTopic(Integer id, Message message) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
+        if (topic == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         message.setTopic(topic);
         message.setUser(securityService.getSecurityPrincipal());
         return messageDao.addMessage(message);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void remove(Integer id) {
-        Message message = messageDao.getMessagesById(id);
-        messageDao.remove(message);
+    public void remove(Integer id) throws EntityNotFoundException {
+        messageDao.remove(id);
     }
 
     public String getMessagesByTopicIdJSON(Integer id, Integer perPage, Integer page, String order, String sort) throws EntityNotFoundException {
@@ -75,14 +75,15 @@ public class MessageService {
         final JsonObjectNodeBuilder nodeBuilder = anObjectBuilder();
         nodeBuilder.withField("total_page", aNumberBuilder(Integer.toString(size)));
         User user = securityService.getSecurityPrincipal();
+
         final JsonArrayNodeBuilder messagesBuider = anArrayBuilder();
         for (Message message : messagesById) {
+            Boolean canDelete = user != null && message.getUser() != null && message.getUser().getId().equals(user.getId());
             final JsonObjectNodeBuilder messageBuilder = anObjectBuilder();
             messageBuilder.withField("id", aNumberBuilder(message.getId().toString()));
             messageBuilder.withField("message", aStringBuilder(message.getMessage()));
             messageBuilder.withField("date", aStringBuilder(new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(message.getDate())));
-            messageBuilder.withField("canDelete", user == null ? aFalseBuilder() :
-                    message.getUser().getId().equals(user.getId()) ? aTrueBuilder() : aFalseBuilder());
+            messageBuilder.withField("canDelete", canDelete ? aTrueBuilder() : aFalseBuilder());
             messagesBuider.withElement(messageBuilder);
         }
         nodeBuilder.withField("items", messagesBuider);

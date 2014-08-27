@@ -19,12 +19,10 @@ class window.App.Collections.Topics extends Backbone.PageableCollection
   }
 
   parseState: (resp, queryParams, state, options)->
-    respJSON = JSON.parse(resp)
-    return {totalRecords: respJSON.total_page}
+    return {totalRecords: resp.total_page}
 
   parseRecords: (resp, options)->
-    respJSON = JSON.parse(resp)
-    return respJSON.items
+    return resp.items
 
   fetchTopics: (e) ->
     @fetch {reset: true}
@@ -63,12 +61,10 @@ class window.App.Collections.Messages extends Backbone.PageableCollection
   }
 
   parseState: (resp, queryParams, state, options)->
-    respJSON = JSON.parse(resp)
-    return {totalRecords: respJSON.total_page}
+    return {totalRecords: resp.total_page}
 
   parseRecords: (resp, options)->
-    respJSON = JSON.parse(resp)
-    return respJSON.items
+    return resp.items
 
   fetchMessages:  () ->
     @fetch {reset: true}

@@ -1,10 +1,15 @@
 package com.gbax.TopicsTestTask.dao;
 
+import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
+import com.gbax.TopicsTestTask.enums.Errors;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,23 +22,24 @@ import java.util.List;
  * Date: 15.08.14
  */
 @Repository("topicDao")
-@Transactional
 public class TopicDao {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    @Transactional
     public Topic addTopic(Topic topic) {
         entityManager.persist(topic);
         return topic;
     }
+
 
     public Topic getTopicById(Integer id) {
         Topic topic = entityManager.find(Topic.class, id);
         return topic;
     }
 
+    @Transactional(readOnly = true)
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
         if (sort != null && sort.equals("updateDate")) {
             sort = "message.date";
@@ -55,7 +61,18 @@ public class TopicDao {
         return query1.getResultList();
     }
 
-    public void remove(Topic topic) {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void remove(Integer topicID) throws EntityNotFoundException {
+        Topic topic = getTopicById(topicID);
+        if (topic == null) {
+            throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
+        }
+        //entityManager.lock(topic, LockModeType.WRITE);
+        for (Message message: topic.getMessages()) {
+            entityManager.remove(message);
+        }
+
+
         entityManager.remove(topic);
     }
 }

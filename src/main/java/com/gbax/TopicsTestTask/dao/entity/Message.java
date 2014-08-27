@@ -16,7 +16,7 @@ public class Message implements java.io.Serializable {
     @Column(nullable = false)
     private String message;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
@@ -26,6 +26,9 @@ public class Message implements java.io.Serializable {
 
     @Column(nullable = false)
     private Date date = new Date();
+
+    @Version
+    private Integer version;
 
     public Integer getId() {
         return id;
@@ -67,5 +70,13 @@ public class Message implements java.io.Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

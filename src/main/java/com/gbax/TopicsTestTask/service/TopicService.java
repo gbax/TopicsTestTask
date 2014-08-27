@@ -55,10 +55,8 @@ public class TopicService {
         return topicDao.getTopics(null, null, null, null);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void remove(Integer id) {
-        Topic topic = topicDao.getTopicById(id);
-        topicDao.remove(topic);
+    public void remove(Integer id) throws EntityNotFoundException {
+        topicDao.remove(id);
     }
 
     public String getTopicsJSON(Integer perPage, Integer page, String order, String sort) {
@@ -75,12 +73,12 @@ public class TopicService {
         User user = securityService.getSecurityPrincipal();
         final JsonArrayNodeBuilder topicsBuider = anArrayBuilder();
         for (Topic topic : topicsPaged) {
+            Boolean canDelete = user != null && topic.getUser() != null && topic.getUser().getId().equals(user.getId());
             final JsonObjectNodeBuilder topicBuilder = anObjectBuilder();
             topicBuilder.withField("id", aNumberBuilder(topic.getId().toString()));
             topicBuilder.withField("description", aStringBuilder(topic.getDescription()));
-            topicBuilder.withField("updateDate", aStringBuilder(new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getMessage().getDate())));
-            topicBuilder.withField("canDelete", user == null ? aFalseBuilder() :
-                    topic.getUser().getId().equals(user.getId()) ? aTrueBuilder() : aFalseBuilder());
+            topicBuilder.withField("updateDate", aStringBuilder(topic.getMessage()!= null ? new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getMessage().getDate()) : ""));
+            topicBuilder.withField("canDelete", canDelete ? aTrueBuilder() : aFalseBuilder());
             topicsBuider.withElement(topicBuilder);
         }
         nodeBuilder.withField("items", topicsBuider);

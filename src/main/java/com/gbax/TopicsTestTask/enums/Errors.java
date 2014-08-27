@@ -2,7 +2,8 @@ package com.gbax.TopicsTestTask.enums;
 
 public enum Errors {
 
-    TOPIC_NOT_FOUND(0, "Топик не найден");
+    TOPIC_NOT_FOUND(0, "Топик не найден"),
+    MESSAGE_NOT_FOUND(1, "Сообщение не найдено");
 
     private Integer id;
     private String message;

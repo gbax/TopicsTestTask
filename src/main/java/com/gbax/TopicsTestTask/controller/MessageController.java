@@ -33,14 +33,15 @@ public class MessageController {
                 e.getClass(), e.getError().getId()));
     }
 
-    @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "{topicId}", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
     public String getMessages(@PathVariable("topicId") Integer topicId) throws EntityNotFoundException, InterruptedException {
         Integer perPage = Integer.parseInt(request.getParameter("per_page"));
         Integer page = Integer.parseInt(request.getParameter("page"));
         String order = request.getParameter("order");
         String sort = request.getParameter("sort");
-        return messageService.getMessagesByTopicIdJSON(topicId, perPage, page, order, sort);
+        String messagesByTopicIdJSON = messageService.getMessagesByTopicIdJSON(topicId, perPage, page, order, sort);
+        return messagesByTopicIdJSON;
     }
 
     @RequestMapping(value = "{topicId}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
@@ -53,7 +54,7 @@ public class MessageController {
 
     @RequestMapping(value = "/{topicId}/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void remove(@PathVariable("topicId") Integer topicId, @PathVariable("id") Integer id) throws InterruptedException {
+    public void remove(@PathVariable("topicId") Integer topicId, @PathVariable("id") Integer id) throws InterruptedException, EntityNotFoundException {
         messageService.remove(id);
     }
 }

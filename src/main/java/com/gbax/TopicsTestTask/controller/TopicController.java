@@ -2,6 +2,7 @@ package com.gbax.TopicsTestTask.controller;
 
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.service.TopicService;
+import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +37,14 @@ public class TopicController {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public void handleEntityNotFoundException(final Exception e, final HttpServletRequest request,
+    public void handleEntityNotFoundException(final EntityNotFoundException e, final HttpServletRequest request,
                                  Writer writer) throws IOException {
         writer.write(String.format(
-                "{\"error\":{\"java.class\":\"%s\", \"message\":\"%s\"}}",
-                e.getClass(), e.getMessage()));
+                "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
+                e.getClass(), e.getError().getId()));
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
     public String topics() {
         Integer perPage = Integer.parseInt(request.getParameter("per_page"));
@@ -62,7 +63,7 @@ public class TopicController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void remove(@PathVariable("id") Integer id) {
+    public void remove(@PathVariable("id") Integer id) throws EntityNotFoundException {
         topicService.remove(id);
     }
 }

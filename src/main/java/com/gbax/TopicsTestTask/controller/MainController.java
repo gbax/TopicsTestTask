@@ -60,7 +60,7 @@ public class MainController {
         user2.setPassword("2");
         userService.addUser(user2);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             Topic topic = new Topic();
             topic.setDescription(String.format("Test topic %s", i));
             topic.setUser(user);
