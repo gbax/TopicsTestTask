@@ -1,12 +1,11 @@
 package com.gbax.TopicsTestTask.dao;
 
-import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
+import com.gbax.TopicsTestTask.service.MessageService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
-import org.h2.jdbc.JdbcSQLException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +28,10 @@ public class TopicDao {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Qualifier("messageService")
     @Autowired
-    MessageDao messageDao;
+    private MessageService messageService;
 
     @Transactional
     public Topic addTopic(Topic topic) {
@@ -38,6 +39,11 @@ public class TopicDao {
         return topic;
     }
 
+    @Transactional
+    public Topic merge(Topic topic) {
+        entityManager.merge(topic);
+        return topic;
+    }
 
     public Topic getTopicById(Integer id) {
         Topic topic = entityManager.find(Topic.class, id);
@@ -52,9 +58,6 @@ public class TopicDao {
 
     @Transactional(readOnly = true)
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
-        if (sort != null && sort.equals("updateDate")) {
-            sort = "message.date";
-        }
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Topic> query = criteriaBuilder.createQuery(Topic.class);
         Root<Topic> topicRoot = query.from(Topic.class);
@@ -74,19 +77,12 @@ public class TopicDao {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void remove(Integer topicID) throws EntityNotFoundException {
-        try {
-
-
-        Topic topic = getTopicByIdWithLock(topicID);
+        Topic topic = entityManager.find(Topic.class, topicID, LockModeType.PESSIMISTIC_READ);
         if (topic == null) {
             throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         }
-        List<Message> messagesByTopic = messageDao.getMessagesByTopic(topic);
-
+        messageService.deleteMessagesByTopic(topic);
         entityManager.remove(topic);
-        } catch (ConstraintViolationException e) {
-            int t= 1;
 
-        }
     }
 }

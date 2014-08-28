@@ -1,23 +1,17 @@
 package com.gbax.TopicsTestTask.controller;
 
-import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
-import com.gbax.TopicsTestTask.dao.entity.User;
 import com.gbax.TopicsTestTask.enums.Errors;
-import com.gbax.TopicsTestTask.service.MessageService;
 import com.gbax.TopicsTestTask.service.TopicService;
-import com.gbax.TopicsTestTask.service.UserService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
@@ -28,12 +22,7 @@ import java.util.Arrays;
 @RequestMapping("/")
 public class MainController {
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    MessageService messageService;
-
+    @Qualifier("topicService")
     @Autowired
     TopicService topicService;
 
@@ -50,30 +39,8 @@ public class MainController {
                 e.getClass(), e.getError().getId()));
     }
 
-    public void fillData(){
-        User user = new User();
-        user.setName("1");
-        user.setPassword("1");
-        userService.addUser(user);
-
-        User user2 = new User();
-        user2.setName("2");
-        user2.setPassword("2");
-        userService.addUser(user2);
-
-        for (int i = 0; i < 20; i++) {
-            Topic topic = new Topic();
-            topic.setDescription(String.format("Test topic %s", i));
-            topic.setUser(user);
-            topicService.save(topic);
-            for (int j = 0;j< 20;j++){
-                Message message=new Message();
-                message.setMessage(String.format("Test message %s", j));
-                message.setTopic(topic);
-                message.setUser(user);
-                messageService.addMessage(message);
-            }
-        }
+    public void fillDatabase() throws EntityNotFoundException {
+        topicService.fillDatabase();
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -92,8 +59,13 @@ public class MainController {
         ModelAndView model = new ModelAndView("index");
         String error = request.getParameter("error");
         if (error != null && !"".equals(error)) {
-            Errors errorType = Errors.getById(Integer.parseInt(error));
-            model.addObject("errors", Arrays.asList(errorType.getMessage()));
+            try {
+                int id = Integer.parseInt(error);
+                Errors errorType = Errors.getById(id);
+                model.addObject("errors", Arrays.asList(errorType.getMessage()));
+            } catch (NumberFormatException e) {
+                model.addObject("errors", Arrays.asList(Errors.INVALID_PARAM.getMessage()));
+            }
         }
         return model;
     }

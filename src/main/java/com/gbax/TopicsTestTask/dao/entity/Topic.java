@@ -1,11 +1,6 @@
 package com.gbax.TopicsTestTask.dao.entity;
 
-import org.hibernate.annotations.*;
-
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
@@ -27,14 +22,8 @@ public class Topic  implements java.io.Serializable {
     @OneToMany(mappedBy = "topic")
     private List<Message> messages;
 
-    //TODO Сделать обновляемое поле!
-/*    @ManyToOne
-    @NotFound(action= NotFoundAction.IGNORE)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula =
-            @JoinFormula(value = "(select m.id from message m where m.topic_id = id order by m.date desc LIMIT 1)"))
-    })
-    private Message message;*/
+    @Column(nullable = true)
+    private Date updateDate;
 
     @Version
     private Integer version;
@@ -71,19 +60,19 @@ public class Topic  implements java.io.Serializable {
         this.user = user;
     }
 
-/*    public Message getMessage() {
-        return message;
-    }
-
-    public void setMessage(Message message) {
-        this.message = message;
-    }*/
-
     public Integer getVersion() {
         return version;
     }
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 }

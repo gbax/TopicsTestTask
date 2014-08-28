@@ -3,6 +3,7 @@ package com.gbax.TopicsTestTask.service;
 import com.gbax.TopicsTestTask.dao.UserDao;
 import com.gbax.TopicsTestTask.dao.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Service
 public class UserService {
 
+    @Qualifier("userDao")
     @Autowired
     UserDao userDao;
 
