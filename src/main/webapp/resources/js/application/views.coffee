@@ -7,11 +7,11 @@ class window.App.Views.MainForm extends Backbone.View
 
     grid = new Backgrid.Grid({
       events:
-        'click th a' : (e) ->
+        'click th a': (e) ->
           $('th', $(@.el))
-            .not($(e.target).parent())
-            .removeClass('descending')
-            .removeClass('ascending')
+          .not($(e.target).parent())
+          .removeClass('descending')
+          .removeClass('ascending')
 
       columns: columns,
       collection: window.App.topics
@@ -29,14 +29,16 @@ class window.App.Views.MainForm extends Backbone.View
     new window.App.Views.AddTopic(collection: window.App.topics)
 
 
-  columns = [{
+  columns = [
+    {
       name: "id",
       label: "Номер"
       editable: false,
       cell: Backgrid.IntegerCell.extend({
         orderSeparator: ''
       })
-    },{
+    },
+    {
       name: "description",
       label: "Форум"
       editable: false
@@ -50,17 +52,19 @@ class window.App.Views.MainForm extends Backbone.View
             href: rawValue,
             title: formattedValue,
             target: "_self"
-          }).text(formattedValue));
-          @delegateEvents();
+          }).text(formattedValue))
+          @delegateEvents()
           @
       })
-    },{
+    },
+    {
       name: "updateDate",
       cell: "string",
       label: "Дата создания",
       editable: false
       sortable: true
-    },{
+    },
+    {
       cell: "id"
       label: "Действие"
       editable: false
@@ -78,7 +82,8 @@ class window.App.Views.MainForm extends Backbone.View
             success: (model, response) ->
               collection.renderOnDestroy()
             error: (model, response) ->
-              alert "Произошла ошибка при удалении. Обновите страницу и повторите"
+              resp = JSON.parse(response.responseText)
+              window.location=window.App.getContextPath()+"/index?error="+ resp.error.error
 
         render: () ->
           this.$el.empty();
@@ -90,11 +95,12 @@ class window.App.Views.MainForm extends Backbone.View
               class: "delete"
               title: formattedValue,
               target: @target
-            }).text(formattedValue));
-            @delegateEvents();
+            }).text(formattedValue))
+            @delegateEvents()
           @
       })
-  }]
+    }
+  ]
 
 ###
 Add topic form
@@ -127,11 +133,11 @@ class window.App.Views.TopicForm extends Backbone.Model
 
     grid = new Backgrid.Grid({
       events:
-        'click th a' : (e) ->
+        'click th a': (e) ->
           $('th', $(@.el))
-            .not($(e.target).parent())
-            .removeClass('descending')
-            .removeClass('ascending')
+          .not($(e.target).parent())
+          .removeClass('descending')
+          .removeClass('ascending')
 
       columns: @columns
       collection: window.App.messages
@@ -149,26 +155,30 @@ class window.App.Views.TopicForm extends Backbone.Model
     new window.App.Views.AddMessage(collection: window.App.messages)
 
 
-  columns: [{
+  columns: [
+    {
       name: "id",
       label: "Номер"
       editable: false
       cell: Backgrid.IntegerCell.extend({
         orderSeparator: ''
       })
-    },{
+    },
+    {
       name: "message",
       cell: "string",
       label: "Сообщение",
       editable: false
       sortable: true
-    },{
+    },
+    {
       name: "date",
       cell: "string",
       label: "Дата создания",
       editable: false
       sortable: true
-    },{
+    },
+    {
       cell: "id"
       label: "Действие"
       editable: false
@@ -183,7 +193,8 @@ class window.App.Views.TopicForm extends Backbone.Model
           @model.destroy
             dataType: "text",
             error: (model, response) ->
-              alert "Произошла ошибка при удалении. Обновите страницу и повторите"
+              resp = JSON.parse(response.responseText)
+              window.location=window.App.getContextPath()+"/index?error="+ resp.error.error
 
         render: () ->
           this.$el.empty();
@@ -195,18 +206,19 @@ class window.App.Views.TopicForm extends Backbone.Model
               class: "delete"
               title: formattedValue,
               target: @target
-            }).text(formattedValue));
-            @delegateEvents();
+            }).text(formattedValue))
+            @delegateEvents()
           @
       })
-    }]
+    }
+  ]
 
 ###
 Add message form
 ###
 class window.App.Views.AddMessage extends Backbone.View
   initialize: ->
-    @messageEl =  @$('#message')
+    @messageEl = @$('#message')
 
   el: '#messageForm'
 
@@ -215,7 +227,7 @@ class window.App.Views.AddMessage extends Backbone.View
 
   addMessage: (e) ->
     e.preventDefault()
-    @collection.create {message: @messageEl.val()},{ wait: true }
+    @collection.create {message: @messageEl.val()}, { wait: true }
     @clearForm()
 
   clearForm: ->

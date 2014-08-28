@@ -4,6 +4,8 @@ import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
+import com.gbax.TopicsTestTask.system.exception.NotAuthorizedException;
+import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -29,11 +31,24 @@ public class MainController {
     @Autowired
     HttpServletRequest request;
 
+    @Autowired
+    SecurityService securityService;
+
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public void handleEntityNotFoundException(final EntityNotFoundException e, final HttpServletRequest request,
                                  Writer writer) throws IOException {
+        writer.write(String.format(
+                "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
+                e.getClass(), e.getError().getId()));
+    }
+
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public void handleNotAuthorizedException(final NotAuthorizedException e, final HttpServletRequest request,
+                                             Writer writer) throws IOException {
         writer.write(String.format(
                 "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
                 e.getClass(), e.getError().getId()));
