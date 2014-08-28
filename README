@@ -1,1 +1,8 @@
-This is test task.
+HOW TO RUN
+----------
+maven jetty:run
+
+USERS
+-----
+1 / 1
+2 / 2
