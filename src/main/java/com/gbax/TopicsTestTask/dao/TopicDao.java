@@ -1,9 +1,11 @@
 package com.gbax.TopicsTestTask.dao;
 
+import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.service.MessageService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -32,6 +34,9 @@ public class TopicDao {
     @Qualifier("messageService")
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private MessageDao messageDao;
 
     @Transactional
     public Topic addTopic(Topic topic) {
