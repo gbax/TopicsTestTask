@@ -68,7 +68,6 @@ public class MessageDao {
         entityManager.remove(message);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<Message> getMessagesByTopic(Topic topic) {  //todo
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
