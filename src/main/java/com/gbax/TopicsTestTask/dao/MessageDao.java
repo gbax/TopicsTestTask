@@ -86,7 +86,7 @@ public class MessageDao {
         entityManager.remove(message);
     }
 
-    public List<Message> getMessagesByTopic(Topic topic) {  //todo
+    public void deleteMessagesByTopic(Topic topic) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Message> query = criteriaBuilder.createQuery(Message.class);
         Root<Message> topicRoot = query.from(Message.class);
@@ -100,6 +100,5 @@ public class MessageDao {
             entityManager.remove(message1);
         }
         entityManager.flush();
-        return resultList;
     }
 }

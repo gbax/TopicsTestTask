@@ -120,7 +120,6 @@ public class TopicService {
             topicsBuider.withElement(topicBuilder);
         }
         nodeBuilder.withField("items", topicsBuider);
-
         return new CompactJsonFormatter().format(nodeBuilder.build());
     }
 

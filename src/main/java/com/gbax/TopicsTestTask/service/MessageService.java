@@ -80,12 +80,7 @@ public class MessageService {
             messagesBuider.withElement(messageBuilder);
         }
         nodeBuilder.withField("items", messagesBuider);
-
         return new CompactJsonFormatter().format(nodeBuilder.build());
-    }
-
-    public void deleteMessagesByTopic(Topic topic) {
-        messageDao.deleteMessagesByTopic(topic);
     }
 
     /**
