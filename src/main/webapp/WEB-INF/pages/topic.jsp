@@ -17,6 +17,9 @@
             <aside class="note">
                 <h3>Список сообщений форума ${topic.description}</h3>
             </aside>
+            <p>
+                <a href="/index">На главную</a>
+            </p>
             <sec:authorize access="isAuthenticated()">
                 <form action="post" id="messageForm" style="margin-bottom: 10px; ">
                     <div style="margin-bottom: 10px;">

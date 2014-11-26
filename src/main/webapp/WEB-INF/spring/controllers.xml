@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="main" class="com.gbax.TopicsTestTask.controller.MainController" init-method="fillData"/>
+    <bean id="main" class="com.gbax.TopicsTestTask.controller.MainController" init-method="fillDatabase"/>
     <bean id="topic" class="com.gbax.TopicsTestTask.controller.TopicController" />
     <bean id="message" class="com.gbax.TopicsTestTask.controller.MessageController" />
 

@@ -1,8 +1,11 @@
 package com.gbax.TopicsTestTask.controller;
 
 import com.gbax.TopicsTestTask.dao.entity.Topic;
+import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
+import com.gbax.TopicsTestTask.system.exception.NotAuthorizedException;
+import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +37,24 @@ public class TopicController {
     @Autowired
     HttpServletRequest request;
 
-    @ExceptionHandler(Throwable.class)
+    @Autowired
+    SecurityService securityService;
+
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public void handleEntityNotFoundException(final EntityNotFoundException e, final HttpServletRequest request,
                                  Writer writer) throws IOException {
+        writer.write(String.format(
+                "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
+                e.getClass(), e.getError().getId()));
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public void handleNotAuthorizedException(final NotAuthorizedException e, final HttpServletRequest request,
+                                             Writer writer) throws IOException {
         writer.write(String.format(
                 "{\"error\":{\"java.class\":\"%s\", \"error\":\"%s\"}}",
                 e.getClass(), e.getError().getId()));
@@ -57,13 +73,19 @@ public class TopicController {
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Topic create(@RequestBody Topic topic) throws IOException {
+    public Topic create(@RequestBody Topic topic) throws IOException, NotAuthorizedException {
+        if (securityService.getSecurityPrincipal() == null) {
+            throw new NotAuthorizedException(Errors.NOT_AUTHORIZED);
+        }
         return topicService.addTopic(topic);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void remove(@PathVariable("id") Integer id) throws EntityNotFoundException {
+    public void remove(@PathVariable("id") Integer id) throws EntityNotFoundException, NotAuthorizedException {
+        if (securityService.getSecurityPrincipal() == null) {
+            throw new NotAuthorizedException(Errors.NOT_AUTHORIZED);
+        }
         topicService.remove(id);
     }
 }

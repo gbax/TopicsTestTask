@@ -3,7 +3,11 @@ package com.gbax.TopicsTestTask.dao;
 import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
+import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
+import com.gbax.TopicsTestTask.system.security.SecurityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,18 +28,32 @@ public class MessageDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private TopicService topicService;
+
+    @Autowired
+    SecurityService securityService;
+
+    /**
+     * Для первоначального заполнения
+     * @param message
+     * @return
+     */
     @Transactional
     public Message addMessage(Message message) {
         return entityManager.merge(message);
     }
 
-    public Message getMessagesById(Integer id) {
-        return entityManager.find(Message.class, id);
-    }
-
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Message getMessagesByIdWithLock(Integer id) {
-        return entityManager.find(Message.class, id, LockModeType.PESSIMISTIC_READ);
+    public Message addMessage(Integer topicId, Message message) throws EntityNotFoundException {
+        Topic topic = entityManager.find(Topic.class, topicId, LockModeType.PESSIMISTIC_READ);
+        if (topic == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
+        message.setTopic(topic);
+        message.setUser(securityService.getSecurityPrincipal());
+        Message merge = entityManager.merge(message);
+        topic.setUpdateDate(message.getDate());
+        topicService.merge(topic);
+        return merge;
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +77,9 @@ public class MessageDao {
         return query1.getResultList();
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void remove(Integer messageId) throws EntityNotFoundException {
-        Message message = getMessagesByIdWithLock(messageId);
+        Message message = entityManager.find(Message.class, messageId, LockModeType.PESSIMISTIC_READ);
         if (message == null) {
             throw new EntityNotFoundException(Errors.MESSAGE_NOT_FOUND);
         }
@@ -77,10 +95,9 @@ public class MessageDao {
         TypedQuery<Message> query1 = entityManager.createQuery(query);
         query1.setParameter(p, topic);
         List<Message> resultList = query1.getResultList();
-
         for (Message message: resultList) {
-
-            entityManager.remove(message);
+            Message message1 = entityManager.find(Message.class, message.getId(), LockModeType.PESSIMISTIC_READ);
+            entityManager.remove(message1);
         }
         entityManager.flush();
         return resultList;

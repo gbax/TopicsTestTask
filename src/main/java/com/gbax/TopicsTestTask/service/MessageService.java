@@ -11,9 +11,8 @@ import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -23,18 +22,16 @@ import static argo.jdom.JsonNodeBuilders.*;
 @Service
 public class MessageService {
 
+    @Qualifier("messageDao")
     @Autowired
     MessageDao messageDao;
 
+    @Qualifier("topicService")
     @Autowired
     TopicService topicService;
 
     @Autowired
     SecurityService securityService;
-
-    public void addMessage(Message message) {
-        messageDao.addMessage(message);
-    }
 
     public List<Message> getMessagesById(Integer id, Integer perPage, Integer page, String order, String sort) throws EntityNotFoundException {
         Topic topic = topicService.getTopicById(id);
@@ -51,11 +48,7 @@ public class MessageService {
     }
 
     public Message addMessageToTopic(Integer id, Message message) throws EntityNotFoundException {
-        Topic topic = topicService.getTopicById(id);
-        if (topic == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
-        message.setTopic(topic);
-        message.setUser(securityService.getSecurityPrincipal());
-        return messageDao.addMessage(message);
+        return messageDao.addMessage(id, message);
     }
 
     public void remove(Integer id) throws EntityNotFoundException {
@@ -89,5 +82,18 @@ public class MessageService {
         nodeBuilder.withField("items", messagesBuider);
 
         return new CompactJsonFormatter().format(nodeBuilder.build());
+    }
+
+    public void deleteMessagesByTopic(Topic topic) {
+        messageDao.deleteMessagesByTopic(topic);
+    }
+
+    /**
+     * Для первоначального заполнения
+     * @param message
+     * @return
+     */
+    public Message addMessage(Message message) {
+        return messageDao.addMessage(message);
     }
 }
