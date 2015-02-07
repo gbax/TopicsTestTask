@@ -11,7 +11,6 @@ import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -22,11 +21,9 @@ import static argo.jdom.JsonNodeBuilders.*;
 @Service
 public class MessageService {
 
-    @Qualifier("messageDao")
     @Autowired
     MessageDao messageDao;
 
-    @Qualifier("topicService")
     @Autowired
     TopicService topicService;
 

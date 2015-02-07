@@ -1,7 +1,5 @@
 package com.gbax.TopicsTestTask.dao.entity;
 
-import org.codehaus.jackson.annotate.*;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -27,9 +25,6 @@ public class Message implements java.io.Serializable {
     @Column(nullable = false)
     private Date date = new Date();
 
-    @Version
-    private Integer version;
-
     public Integer getId() {
         return id;
     }
@@ -50,7 +45,6 @@ public class Message implements java.io.Serializable {
         return topic;
     }
 
-    @JsonIgnore
     public void setTopic(Topic topic) {
         this.topic = topic;
     }
@@ -59,7 +53,6 @@ public class Message implements java.io.Serializable {
         return user;
     }
 
-    @JsonIgnore
     public void setUser(User user) {
         this.user = user;
     }
@@ -70,13 +63,5 @@ public class Message implements java.io.Serializable {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 }

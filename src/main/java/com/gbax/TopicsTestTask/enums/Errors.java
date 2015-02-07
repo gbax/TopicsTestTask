@@ -3,9 +3,9 @@ package com.gbax.TopicsTestTask.enums;
 public enum Errors {
 
     NOT_AUTHORIZED(0, "Пользователь не зарегистрирован"),
-    TOPIC_NOT_FOUND(0, "Топик не найден"),
-    MESSAGE_NOT_FOUND(1, "Сообщение не найдено"),
-    INVALID_PARAM(2, "Неверный параметр");
+    TOPIC_NOT_FOUND(1, "Топик не найден"),
+    MESSAGE_NOT_FOUND(2, "Сообщение не найдено"),
+    INVALID_PARAM(3, "Неверный параметр");
 
     private Integer id;
     private String message;

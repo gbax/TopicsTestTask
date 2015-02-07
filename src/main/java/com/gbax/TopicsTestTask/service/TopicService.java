@@ -11,12 +11,8 @@ import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
 import com.gbax.TopicsTestTask.system.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 
-import javax.persistence.LockModeType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -27,19 +23,15 @@ import static argo.jdom.JsonNodeBuilders.*;
 @Service
 public class TopicService {
 
-    @Qualifier("topicDao")
     @Autowired
     private TopicDao topicDao;
 
-    @Qualifier("messageService")
     @Autowired
     MessageService messageService;
 
-    @Qualifier("securityService")
     @Autowired
     private SecurityService securityService;
 
-    @Qualifier("userService")
     @Autowired
     UserService userService;
 

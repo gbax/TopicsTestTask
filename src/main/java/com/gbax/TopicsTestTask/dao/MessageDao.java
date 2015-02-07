@@ -22,7 +22,8 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-@Repository("messageDao")
+@Repository
+@Transactional
 public class MessageDao {
 
     @PersistenceContext
@@ -39,7 +40,6 @@ public class MessageDao {
      * @param message
      * @return
      */
-    @Transactional
     public Message addMessage(Message message) {
         return entityManager.merge(message);
     }
@@ -77,7 +77,7 @@ public class MessageDao {
         return query1.getResultList();
     }
 
-    @Transactional
+
     public void remove(Integer messageId) throws EntityNotFoundException {
         Message message = entityManager.find(Message.class, messageId, LockModeType.PESSIMISTIC_READ);
         if (message == null) {

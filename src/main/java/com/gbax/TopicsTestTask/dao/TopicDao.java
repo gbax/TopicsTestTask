@@ -22,7 +22,8 @@ import java.util.List;
  * Created by abayanov
  * Date: 15.08.14
  */
-@Repository("topicDao")
+@Repository
+@Transactional
 public class TopicDao {
 
     @PersistenceContext
@@ -31,13 +32,11 @@ public class TopicDao {
     @Autowired
     private MessageDao messageDao;
 
-    @Transactional
     public Topic addTopic(Topic topic) {
         entityManager.persist(topic);
         return topic;
     }
 
-    @Transactional
     public Topic merge(Topic topic) {
         entityManager.merge(topic);
         return topic;

@@ -24,7 +24,6 @@ import java.util.Arrays;
 @RequestMapping("/")
 public class MainController {
 
-    @Qualifier("topicService")
     @Autowired
     TopicService topicService;
 

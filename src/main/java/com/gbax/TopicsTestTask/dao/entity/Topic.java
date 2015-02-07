@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-
 @Entity
 @Table(name = "topic")
 public class Topic  implements java.io.Serializable {
@@ -13,6 +12,7 @@ public class Topic  implements java.io.Serializable {
     @GeneratedValue
     private Integer id;
 
+    @Column(nullable = false)
     private String description;
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -24,9 +24,6 @@ public class Topic  implements java.io.Serializable {
 
     @Column(nullable = true)
     private Date updateDate;
-
-    @Version
-    private Integer version;
 
     public Integer getId() {
         return id;
@@ -58,14 +55,6 @@ public class Topic  implements java.io.Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     public Date getUpdateDate() {
