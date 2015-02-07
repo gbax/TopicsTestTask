@@ -1,6 +1,7 @@
 package com.gbax.TopicsTestTask.system.security;
 
 import com.gbax.TopicsTestTask.dao.entity.User;
+import com.gbax.TopicsTestTask.system.security.api.ISecurityService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
  * Date: 18.08.14
  */
 @Service
-public class SecurityService {
+public class SecurityService implements ISecurityService {
 
     public User getSecurityPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

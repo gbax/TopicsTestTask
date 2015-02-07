@@ -9,7 +9,7 @@ import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.dao.entity.User;
 import com.gbax.TopicsTestTask.enums.Errors;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
-import com.gbax.TopicsTestTask.system.security.SecurityService;
+import com.gbax.TopicsTestTask.system.security.api.ISecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,9 @@ import java.util.List;
 
 import static argo.jdom.JsonNodeBuilders.*;
 
-
+/**
+ * Сервис для работы с топиками
+ */
 @Service
 public class TopicService {
 
@@ -27,14 +29,17 @@ public class TopicService {
     private TopicDao topicDao;
 
     @Autowired
-    MessageService messageService;
+    private MessageService messageService;
 
     @Autowired
-    private SecurityService securityService;
+    private ISecurityService securityService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
+    /**
+     * Заполнение БД тестовыми данными
+     */
     public void fillDatabase() {
         User user = new User();
         user.setName("1");
@@ -51,9 +56,9 @@ public class TopicService {
             topic.setDescription(String.format("Test topic %s", i));
             topic.setUser(user);
             topic.setUpdateDate(new Date());
-            save(topic);
-            for (int j = 0;j< 20;j++){
-                Message message=new Message();
+            topicDao.addTopic(topic);
+            for (int j = 0; j < 20; j++) {
+                Message message = new Message();
                 message.setMessage(String.format("Test message %s", j));
                 message.setTopic(topic);
                 message.setUser(user);
@@ -62,33 +67,99 @@ public class TopicService {
         }
     }
 
+    /**
+     * Заполнение БД данными для тестов
+     */
+    public void fillDatabaseForTest() {
+        User user = new User();
+        user.setName("1");
+        user.setPassword("1");
+        userService.addUser(user);
+
+        for (int i = 0; i < 2; i++) {
+            Topic topic = new Topic();
+            topic.setDescription(String.format("Test topic %s", i));
+            topic.setUser(user);
+            topic.setUpdateDate(new Date());
+            topicDao.addTopic(topic);
+            for (int j = 0; j < 5; j++) {
+                Message message = new Message();
+                message.setMessage(String.format("Test message %s", j));
+                message.setTopic(topic);
+                message.setUser(user);
+                messageService.addMessage(message);
+            }
+        }
+    }
+
+    /**
+     * Сохранение топика
+     *
+     * @param topic топик
+     * @return сохраненный топик
+     */
     public Topic addTopic(Topic topic) {
         topic.setUser(securityService.getSecurityPrincipal());
         return topicDao.addTopic(topic);
     }
 
-    public Topic save(Topic topic) {
-        return topicDao.addTopic(topic);
-    }
-
+    /**
+     * Получение списка топиков по ID
+     *
+     * @param id ID топика
+     * @return топик
+     * @throws EntityNotFoundException топик не найден
+     */
     public Topic getTopicById(Integer id) throws EntityNotFoundException {
         Topic topicById = topicDao.getTopicById(id);
         if (topicById == null) throw new EntityNotFoundException(Errors.TOPIC_NOT_FOUND);
         return topicById;
     }
 
+    /**
+     * Получение страницы с топиками
+     *
+     * @param perPage кол-во сообщения на странице
+     * @param first   номер страницы
+     * @param order   порядок сортировки
+     * @param sort    столбец сортировки
+     * @return страница с топиками
+     */
     public List<Topic> getTopics(Integer perPage, Integer first, String order, String sort) {
         return topicDao.getTopics(perPage, first, order, sort);
     }
 
+    /**
+     * Получение всех топиков
+     *
+     * @return список топиков
+     */
     public List<Topic> getTopics() {
         return topicDao.getTopics(null, null, null, null);
     }
 
+    /**
+     * Удаление топика
+     *
+     * @param id ID топика
+     * @throws EntityNotFoundException топик не найден
+     */
     public void remove(Integer id) throws EntityNotFoundException {
         topicDao.remove(id);
     }
 
+    /**
+     * Получение страницы с топиками в виде JSON
+     * (конвертация в json выполняется в сервисе(а не в маппере) по причине того,
+     * что компоненту пагинатора на фронтенде требуются дополнительные данные об общем кол-ве страниц)
+     * TODO надо исправить это
+     *
+     * @param perPage кол-во сообщения на странице
+     * @param page    номер страницы
+     * @param order   порядок сортировки
+     * @param sort    столбец сортировки
+     * @return страница с топиками в виде JSON
+     */
     public String getTopicsJSON(Integer perPage, Integer page, String order, String sort) {
         List<Topic> topics = getTopics();
         int size = topics.size();
@@ -107,16 +178,11 @@ public class TopicService {
             final JsonObjectNodeBuilder topicBuilder = anObjectBuilder();
             topicBuilder.withField("id", aNumberBuilder(topic.getId().toString()));
             topicBuilder.withField("description", aStringBuilder(topic.getDescription()));
-            topicBuilder.withField("updateDate", aStringBuilder(topic.getUpdateDate()!= null ? new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getUpdateDate()) : ""));
+            topicBuilder.withField("updateDate", aStringBuilder(topic.getUpdateDate() != null ? new SimpleDateFormat("dd.MM.yyyy hh:mm:ss").format(topic.getUpdateDate()) : ""));
             topicBuilder.withField("canDelete", canDelete ? aTrueBuilder() : aFalseBuilder());
             topicsBuider.withElement(topicBuilder);
         }
         nodeBuilder.withField("items", topicsBuider);
         return new CompactJsonFormatter().format(nodeBuilder.build());
-    }
-
-    public Topic merge(Topic topic) {
-        topicDao.merge(topic);
-        return topic;
     }
 }

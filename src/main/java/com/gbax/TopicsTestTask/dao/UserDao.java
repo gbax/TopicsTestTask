@@ -16,17 +16,8 @@ public class UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-
     public void addUser(User user) {
         entityManager.persist(user);
-    }
-
-    public User getUserById(Integer id) {
-        return entityManager.find(User.class, id);
-    }
-
-    public List getAllUser() {
-        return entityManager.createQuery("select t from User t").getResultList();
     }
 
     public User getUserByName(String name) {

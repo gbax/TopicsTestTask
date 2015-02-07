@@ -8,28 +8,29 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
+ * Сервис для работы с пользователями
  * Created by abayanov
  * Date: 15.08.14
  */
-
 @Service
 public class UserService {
 
     @Autowired
     UserDao userDao;
 
+    /**
+     * Добавление пользователя
+     * @param user пользователь
+     */
     public void addUser(User user) {
         userDao.addUser(user);
     }
 
-    public User getUserById(Integer id) {
-        return userDao.getUserById(id);
-    }
-
-    public List getAllUser() {
-        return userDao.getAllUser();
-    }
-
+    /**
+     * Получение пользователя по имени
+     * @param name имя пользователя
+     * @return пользователь
+     */
     public User getUserByName(String name) {
         return userDao.getUserByName(name);
     }

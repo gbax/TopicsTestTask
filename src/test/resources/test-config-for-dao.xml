@@ -1,0 +1,17 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+						    http://www.springframework.org/schema/beans
+        				    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="messageDao" class="com.gbax.TopicsTestTask.dao.MessageDao"/>
+    <!--Бины создаются для первоначального заполнения тестовой БД. По хорошему это должно делаться скриптом-->
+    <bean id="topicService" class="com.gbax.TopicsTestTask.service.TopicService" init-method="fillDatabaseForTest"/>
+    <bean id="securityService" class="utils.SecurityService"/>
+    <bean id="messageService" class="com.gbax.TopicsTestTask.service.MessageService" />
+    <bean id="userService" class="com.gbax.TopicsTestTask.service.UserService"/>
+    <bean id="topicDao" class="com.gbax.TopicsTestTask.dao.TopicDao"/>
+    <bean id="userDao" class="com.gbax.TopicsTestTask.dao.UserDao"/>
+
+</beans>

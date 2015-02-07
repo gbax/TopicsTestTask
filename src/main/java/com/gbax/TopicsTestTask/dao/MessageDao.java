@@ -3,11 +3,9 @@ package com.gbax.TopicsTestTask.dao;
 import com.gbax.TopicsTestTask.dao.entity.Message;
 import com.gbax.TopicsTestTask.dao.entity.Topic;
 import com.gbax.TopicsTestTask.enums.Errors;
-import com.gbax.TopicsTestTask.service.TopicService;
 import com.gbax.TopicsTestTask.system.exception.EntityNotFoundException;
-import com.gbax.TopicsTestTask.system.security.SecurityService;
+import com.gbax.TopicsTestTask.system.security.api.ISecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +28,7 @@ public class MessageDao {
     private EntityManager entityManager;
 
     @Autowired
-    private TopicService topicService;
-
-    @Autowired
-    SecurityService securityService;
+    ISecurityService securityService;
 
     /**
      * Для первоначального заполнения
@@ -52,7 +47,7 @@ public class MessageDao {
         message.setUser(securityService.getSecurityPrincipal());
         Message merge = entityManager.merge(message);
         topic.setUpdateDate(message.getDate());
-        topicService.merge(topic);
+        entityManager.merge(topic);
         return merge;
     }
 
