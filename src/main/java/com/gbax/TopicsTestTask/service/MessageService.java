@@ -157,8 +157,10 @@ public class MessageService {
         );
         Date date = null;
         for (String format : formats) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            simpleDateFormat.setLenient(false);
             try {
-                date = (new SimpleDateFormat(format)).parse(dateString);
+                date = simpleDateFormat.parse(dateString);
             } catch (ParseException ignored) {}
             if (date != null) {
                 break;

@@ -123,13 +123,9 @@ public class MessageControllerTest extends AbstractTest {
      * Тест получения сообщения по ID
      */
     @Test
-    public void testGetMessages() {
-        String messages1 = null;
-        try {
-            messages1 = messageController.getMessages(0);
-        } catch (EntityNotFoundException e) {
-            assert false;
-        }
+    public void testGetMessages() throws EntityNotFoundException {
+        String messages1;
+        messages1 = messageController.getMessages(0);
         assertEquals(messages1, "Test string");
     }
 
@@ -137,13 +133,9 @@ public class MessageControllerTest extends AbstractTest {
      * Тест создания сообщения
      */
     @Test
-    public void testCreateMessages() {
-        Message resultMessage = null;
-        try {
-            resultMessage = messageController.create(0, message);
-        } catch (EntityNotFoundException | NotAuthorizedException e) {
-            assert false;
-        }
+    public void testCreateMessages() throws NotAuthorizedException, EntityNotFoundException {
+        Message resultMessage;
+        resultMessage = messageController.create(0, message);
         assertNotNull(resultMessage);
     }
 
@@ -151,81 +143,69 @@ public class MessageControllerTest extends AbstractTest {
      * Тест создания сообщения в отсутствующем топике
      */
     @Test
-    public void testCreateMessagesEntityNotFound() {
+    public void testCreateMessagesEntityNotFound() throws NotAuthorizedException {
         ReflectionTestUtils.setField(messageController, "messageService", messageServiceEntityNotFound);
-        Message resultMessage = null;
+        Boolean exceptionThrowed = false;
         try {
-            resultMessage = messageController.create(0, message);
+            Message resultMessage = messageController.create(0, message);
         } catch (EntityNotFoundException e) {
-            assert true;
-        } catch (NotAuthorizedException e) {
-            assert false;
+            //assert false; тут сработает
+            exceptionThrowed = true;
         }
-
-        assertNull(resultMessage);
+        assert exceptionThrowed;
     }
 
     /**
      * Тест попытки создния сообщения неавторизованным пользователем
      */
     @Test
-    public void testCreateMessagesNotAutorized() {
+    public void testCreateMessagesNotAutorized() throws EntityNotFoundException {
         ReflectionTestUtils.setField(messageController, "securityService", securityServiceHasNotUser);
-        Message resultMessage = null;
+        Boolean exceptionThrowed = false;
         try {
-            resultMessage = messageController.create(0, message);
-        } catch (EntityNotFoundException e) {
-            assert false;
+            Message resultMessage = messageController.create(0, message);
         } catch (NotAuthorizedException e) {
-            assert true;
+            exceptionThrowed = true;
         }
-        assertNull(resultMessage);
+        assert exceptionThrowed;
     }
 
     /**
      * Тест удалния сообщения
      */
     @Test
-    public void testRemove() {
-        try {
-            messageController.remove(0, 0);
-        } catch (EntityNotFoundException | NotAuthorizedException e) {
-            assert false;
-        }
-        assert true;
+    public void testRemove() throws NotAuthorizedException, EntityNotFoundException {
+        messageController.remove(0, 0);
     }
 
     /**
      * Тест попытки удаления отсутствующего соообщения
      */
     @Test
-    public void testRemoveMessagesEntityNotFound() {
+    public void testRemoveMessagesEntityNotFound() throws NotAuthorizedException {
         ReflectionTestUtils.setField(messageController, "messageService", messageServiceEntityNotFound);
+        Boolean exceptionThrowed = false;
         try {
             messageController.remove(0, 0);
         } catch (EntityNotFoundException e) {
-            assert true;
-        } catch (NotAuthorizedException e) {
-            assert false;
+            exceptionThrowed = true;
         }
-
-        assert true;
+        assert exceptionThrowed;
     }
 
     /**
      * Тест попытки удаления сообщения неавторизованным пользователем
      */
     @Test
-    public void testRemoveMessagesNotAutorized() {
+    public void testRemoveMessagesNotAutorized() throws EntityNotFoundException {
         ReflectionTestUtils.setField(messageController, "securityService", securityServiceHasNotUser);
+        Boolean exceptionThrowed = false;
         try {
             messageController.remove(0, 0);
-        } catch (EntityNotFoundException e) {
-            assert false;
-        } catch (NotAuthorizedException e) {
-            assert true;
+        }  catch (NotAuthorizedException e) {
+            exceptionThrowed = true;
         }
-        assert true;
+        assert exceptionThrowed;
     }
 
 }

@@ -30,16 +30,11 @@ public class MessageDaoTest extends AbstractDaoTest {
      * Тест добавления сообщения
      */
     @Test
-    public void addMessageTest() {
+    public void addMessageTest() throws EntityNotFoundException {
         Message message = new Message();
         String messsageText = "Test message";
         message.setMessage(messsageText);
-        Message resultMessage = null;
-        try {
-            resultMessage = messageDao.addMessage(1, message);
-        } catch (EntityNotFoundException e) {
-            assert false;
-        }
+        Message resultMessage = messageDao.addMessage(1, message);
         assertNotNull(resultMessage);
         assertNotNull(resultMessage.getTopic());
         assertNotNull(resultMessage.getUser());
@@ -55,17 +50,17 @@ public class MessageDaoTest extends AbstractDaoTest {
         Message message = new Message();
         String messsageText = "Test message";
         message.setMessage(messsageText);
-        Message resultMessage = null;
+        Boolean exceptionThrowed = false;
         try {
-            resultMessage = messageDao.addMessage(999, message);
+            Message resultMessage = messageDao.addMessage(999, message);
         } catch (EntityNotFoundException e) {
-            assert true;
+            exceptionThrowed = true;
         }
-        assertNull(resultMessage);
+        assert exceptionThrowed;
     }
 
     /**
-     *  Тест получения сообщений топика
+     * Тест получения сообщений топика
      */
     @Test
     public void getMessagesByTopicTest() {
@@ -82,24 +77,20 @@ public class MessageDaoTest extends AbstractDaoTest {
      * Тест удаления сообщения в топике
      */
     @Test
-    public void removeTest() {
+    public void removeTest() throws EntityNotFoundException {
         Topic topic = new Topic();
         topic.setId(1);
         List<Message> messages = messageDao.getMessagesByTopic(topic, 10, 0, null, null);
         Message message = messages.get(0);
         Integer id = message.getId();
-        try {
-            messageDao.remove(id);
-        } catch (EntityNotFoundException e) {
-            assert false;
-        }
+        messageDao.remove(id);
         messages = messageDao.getMessagesByTopic(topic, 10, 0, null, null);
         message = messages.get(0);
         assertNotEquals(message.getId(), id);
     }
 
     /**
-     *  Тест удаления всех сообщений в топике
+     * Тест удаления всех сообщений в топике
      */
     @Test
     public void deleteMessagesByTopicTest() {
@@ -109,7 +100,7 @@ public class MessageDaoTest extends AbstractDaoTest {
         assertEquals(messages.size(), 5);
         messageDao.deleteMessagesByTopic(topic);
         messages = messageDao.getMessagesByTopic(topic, 10, 0, null, null);
-        assertEquals(messages.size(),0);
+        assertEquals(messages.size(), 0);
     }
 
 }
